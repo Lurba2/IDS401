@@ -34,7 +34,6 @@ public class final_pos extends JFrame{
 	private JButton updateInv;
 	private JButton changePrice;
 	private JButton empViewInv;
-	private Jbutton 
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -216,11 +215,15 @@ public class final_pos extends JFrame{
 		empManipulation = new JPanel();
 		empManipulation.setLayout(new GridLayout(3,1, 10, 10));
 		
-		empPage.add(new JLabel("This is the employee page"));
+		Font font1= new Font("Serif", Font.BOLD, 24);
 		JButton empManipulateInv = new JButton("Add/Delete Inventory");
+		empManipulateInv.setFont(font1);
 		empViewInv = new JButton("View Inventory");
+		empViewInv.setFont(font1);
+		
 		empViewInv.addActionListener(new EmpDisplayInv());
 		JButton empChangeInvPrice = new JButton("Change Prices");
+		empChangeInvPrice.setFont(font1);
 		
 		empBtmPanel = new JPanel();
 		empManipulation.add(empManipulateInv, BorderLayout.CENTER);
@@ -255,8 +258,6 @@ public class final_pos extends JFrame{
 		}catch(SQLException e) {
 			System.out.println(e.getMessage());
 		}
-		
-		new final_pos();
 	}
 
 	class IntroToPage implements ActionListener{
