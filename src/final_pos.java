@@ -246,13 +246,15 @@ public class final_pos extends JFrame{
 		
 		//EmployeeViewInventoryPage
 
-		String[] empInvChoice = {"Appliances", "Furniture", "Clothes"};
-		empViewInvResult = new JTextArea();
-		empViewInvPanel = new JPanel();
-		empViewInvPanelSelection = new JPanel();
-		empViewInvPanelSelection.setLayout(new GridLayout(2,1));
+		String[] empInvChoice = {" ", "Appliances", "Furniture", "Electronics"};
+		empViewInvPanel = new JPanel();  //main view inventory page
+		empViewInvPanelSelection = new JPanel(); //selection part of the page
 		
-		empViewInvPanel.setLayout(new GridLayout(1,2));
+		empViewInvResult = new JTextArea(); //where our inventory will be output.
+
+		empViewInvPanelSelection.setLayout(new FlowLayout());
+		
+		empViewInvPanel.setLayout(new GridLayout(2,1));
 		JLabel empViewInvResultChoice = new JLabel("View inventory from");
 		empViewInvPanelSelection.add(empViewInvResultChoice);
 		empViewInvPanel.add(new JScrollPane(empViewInvResult));
@@ -302,23 +304,26 @@ public class final_pos extends JFrame{
 
 		}
 	//----Calls employee view of items-----
-	public void EmpInv() {
+	public void EmpInv() throws Error{
+		String empViewInvCall = "";
+		String selectedTable = "";
 		try {
 			Connection connection = DriverManager.getConnection(dbUrl);
-			String empViewInvCall = "Select * FROM " + empViewInvChoice;
+			selectedTable = (String) empViewInvChoice.getSelectedItem(); 
+			empViewInvCall = "SELECT * FROM " + selectedTable + " WHERE Quantity != 0";
 			Statement stmtEmpViewInv = connection.createStatement();
 			ResultSet rsEmpViewInv = stmtEmpViewInv.executeQuery(empViewInvCall);
+			empViewInvResult.setText(" ");
 			while (rsEmpViewInv.next()){
 				String name= rsEmpViewInv.getString("Name");
 				int quantity = rsEmpViewInv.getInt("Quantity");
 				double price = rsEmpViewInv.getDouble("Price");
-				String output = "Item: " + name + " Quantity: " + quantity + " Price: " + price + "\n";
+				String output = "Item: " + name + ", Quantity: " + quantity + ", Price: " + price + "\n";
 				empViewInvResult.append(output);
-			String EmpViewInvCall;
-			Statement stmt1= connection.createStatement();
+				empViewInvResult.setFont(new Font("Seriff",Font.PLAIN, 30));
 			}		
 		} catch(SQLException e) {
-			System.out.println(e.getMessage());
+			System.out.println(e.getMessage() +empViewInvCall );
 		}
 	}
 	//Employee Login after pressing log in
