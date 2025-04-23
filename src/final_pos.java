@@ -46,11 +46,15 @@ public class final_pos extends JFrame{
 	private JPanel appTable;
 	private JPanel empManipulation;
 	private JPanel empViewInvPanel;
+	private JPanel empViewInvPanelSelection;
 	
 	private JTextField userInput;
 	private JTextField passInput;
 	
-	private JTextArea empViewInvResults;
+	private JTextArea empViewInvResult;
+	
+	private JComboBox<String> empViewInvChoice;
+	
 	
 	public final_pos() {//constructor
 		setPreferredSize(new Dimension(800,800));;//set size to 800x800
@@ -239,7 +243,25 @@ public class final_pos extends JFrame{
 		empPage.add(empBtmPanel, BorderLayout.SOUTH);
 		BackToIntro Back=new BackToIntro();
 		empBackBtn.addActionListener(Back);
+		
+		//EmployeeViewInventoryPage
 
+		String[] empInvChoice = {"Appliances", "Furniture", "Clothes"};
+		empViewInvResult = new JTextArea();
+		empViewInvPanel = new JPanel();
+		empViewInvPanelSelection = new JPanel();
+		empViewInvPanelSelection.setLayout(new GridLayout(2,1));
+		
+		empViewInvPanel.setLayout(new GridLayout(1,2));
+		JLabel empViewInvResultChoice = new JLabel("View inventory from");
+		empViewInvPanelSelection.add(empViewInvResultChoice);
+		empViewInvPanel.add(new JScrollPane(empViewInvResult));
+		empViewInvChoice = new JComboBox<>(empInvChoice);
+		empViewInvPanelSelection.add(empViewInvChoice);
+		empViewInvPanel.add(empViewInvPanelSelection, 1, 1);
+		empViewInvChoiceListener empViewInvChoiceListener1 = new empViewInvChoiceListener();
+		empViewInvChoice.addActionListener(empViewInvChoiceListener1);
+		
 
 /*--------------------------------------------------------------------------*/
 		//APPLIANCE PAGE
@@ -283,19 +305,15 @@ public class final_pos extends JFrame{
 	public void EmpInv() {
 		try {
 			Connection connection = DriverManager.getConnection(dbUrl);
-			String EmpViewInvCallApp = "SELECT * FROM Appliances WHERE Quantity != 0";
-			Statement stmt = connection.createStatement();
-			ResultSet rs = stmt.executeQuery(EmpViewInvCallApp);
-			empViewInvResults = new JTextArea();
-			empViewInvPanel = new JPanel();
-			empViewInvPanel.setLayout(new GridLayout(1,1));
-			empViewInvPanel.add(new JScrollPane(empViewInvResults));
-			while (rs.next()){
-				String name= rs.getString("Name");
-				int quantity = rs.getInt("Quantity");
-				double price = rs.getDouble("Price");
+			String empViewInvCall = "Select * FROM " + empViewInvChoice;
+			Statement stmtEmpViewInv = connection.createStatement();
+			ResultSet rsEmpViewInv = stmtEmpViewInv.executeQuery(empViewInvCall);
+			while (rsEmpViewInv.next()){
+				String name= rsEmpViewInv.getString("Name");
+				int quantity = rsEmpViewInv.getInt("Quantity");
+				double price = rsEmpViewInv.getDouble("Price");
 				String output = "Item: " + name + " Quantity: " + quantity + " Price: " + price + "\n";
-				empViewInvResults.append(output);
+				empViewInvResult.append(output);
 			String EmpViewInvCall;
 			Statement stmt1= connection.createStatement();
 			}		
@@ -321,9 +339,8 @@ public class final_pos extends JFrame{
 				}
 		}
 		}
-
 	}
-			
+	
 	class BackToIntro implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
 			if (evt.getSource()==shopBackBtn ||evt.getSource()== empBackBtn){
@@ -350,4 +367,11 @@ public class final_pos extends JFrame{
 			}
 		}
 	}
-}
+		class empViewInvChoiceListener implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empViewInvChoice) {
+					EmpInv();
+				}
+			}
+		}
+	}
