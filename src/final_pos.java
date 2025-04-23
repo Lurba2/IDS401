@@ -34,6 +34,7 @@ public class final_pos extends JFrame{
 	private JButton updateInv;
 	private JButton changePrice;
 	private JButton empViewInv;
+	private JButton empViewInvBackBtn;
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -47,6 +48,7 @@ public class final_pos extends JFrame{
 	private JPanel empManipulation;
 	private JPanel empViewInvPanel;
 	private JPanel empViewInvPanelSelection;
+	private JPanel empViewInvPanelBack;
 	
 	private JTextField userInput;
 	private JTextField passInput;
@@ -249,12 +251,16 @@ public class final_pos extends JFrame{
 		String[] empInvChoice = {" ", "Appliances", "Furniture", "Electronics"};
 		empViewInvPanel = new JPanel();  //main view inventory page
 		empViewInvPanelSelection = new JPanel(); //selection part of the page
+		empViewInvPanelBack = new JPanel();
+		empViewInvPanelBack.setLayout(new BoxLayout(empViewInvPanelBack, BoxLayout.X_AXIS));
+		empViewInvBackBtn = new JButton("Back");
+		empViewInvPanelBack.add(empViewInvBackBtn);
 		
 		empViewInvResult = new JTextArea(); //where our inventory will be output.
 
 		empViewInvPanelSelection.setLayout(new FlowLayout());
 		
-		empViewInvPanel.setLayout(new GridLayout(2,1));
+		empViewInvPanel.setLayout(new GridLayout(3,1));
 		JLabel empViewInvResultChoice = new JLabel("View inventory from");
 		empViewInvPanelSelection.add(empViewInvResultChoice);
 		empViewInvPanel.add(new JScrollPane(empViewInvResult));
@@ -264,6 +270,8 @@ public class final_pos extends JFrame{
 		empViewInvChoiceListener empViewInvChoiceListener1 = new empViewInvChoiceListener();
 		empViewInvChoice.addActionListener(empViewInvChoiceListener1);
 		
+		empViewInvPanel.add(empViewInvPanelBack); //back button
+		empViewInvPanelBack.setFont(font1);
 
 /*--------------------------------------------------------------------------*/
 		//APPLIANCE PAGE
@@ -345,7 +353,6 @@ public class final_pos extends JFrame{
 		}
 		}
 	}
-	
 	class BackToIntro implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
 			if (evt.getSource()==shopBackBtn ||evt.getSource()== empBackBtn){
