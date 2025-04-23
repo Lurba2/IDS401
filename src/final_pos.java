@@ -271,7 +271,7 @@ public class final_pos extends JFrame{
 		empViewInvChoice.addActionListener(empViewInvChoiceListener1);
 		
 		empViewInvPanel.add(empViewInvPanelBack); //back button
-		empViewInvPanelBack.setFont(font1);
+		empViewInvPanelBack.setFont(new Font("Serif", Font.BOLD, 24));
 
 /*--------------------------------------------------------------------------*/
 		//APPLIANCE PAGE
