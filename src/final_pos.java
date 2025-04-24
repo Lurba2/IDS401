@@ -35,6 +35,8 @@ public class final_pos extends JFrame{
 	private JButton changePrice;
 	private JButton empViewInv;
 	private JButton empViewInvBackBtn;
+	private JButton empEditInvAddBtn;
+	private JButton empEditInvDelBtn;
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -49,13 +51,20 @@ public class final_pos extends JFrame{
 	private JPanel empViewInvPanel;
 	private JPanel empViewInvPanelSelection;
 	private JPanel empViewInvPanelBack;
+	private JPanel empEditInv;
+	private JPanel empEditInvSelectPanel;
+	private JPanel empEditInvDel;
 	
 	private JTextField userInput;
 	private JTextField passInput;
 	
 	private JTextArea empViewInvResult;
+	private JTextArea empEditInvView;
 	
 	private JComboBox<String> empViewInvChoice;
+	private JComboBox<String> empEditInvBox;
+	
+	private String[] empInvChoice = {" ", "Appliances", "Furniture", "Electronics"};
 	
 	
 	public final_pos() {//constructor
@@ -246,9 +255,34 @@ public class final_pos extends JFrame{
 		BackToIntro Back=new BackToIntro();
 		empBackBtn.addActionListener(Back);
 		
+		//employee add/subtract inventory
+		editInventory editInventory1 = new editInventory();
+		empManipulateInv.addActionListener(editInventory1);
+		
+		empEditInv = new JPanel();
+		empEditInv.setLayout(new BorderLayout());
+		empEditInvAddBtn = new JButton("Add");
+		empEditInvDelBtn = new JButton("Delete");
+		JLabel empEditInvChoice = new JLabel("Add or Delete Inventory?");
+		
+		empEditInvSelectPanel = new JPanel();
+		empEditInvSelectPanel.setLayout(new FlowLayout());
+		empEditInvSelectPanel.add(empEditInvChoice);
+		empEditInvSelectPanel.add(empEditInvAddBtn);
+		empEditInvSelectPanel.add(empEditInvDelBtn);
+		empEditInv.add(empEditInvSelectPanel, BorderLayout.NORTH);
+		
+		empEditInvDel = new JPanel();
+		empEditInvBox = new JComboBox<>(empInvChoice);
+		empEditInvDel.add(new JLabel("What category to delete from?"));
+		empEditInvDel.add(empEditInvBox);
+		empEditInvView = new JTextArea();
+		empEditInvView.setEditable(false);
+		empEditInvDel.add(empEditInvView);
+		empEditInv.add(empEditInvDel, BorderLayout.CENTER);
+		
 		//EmployeeViewInventoryPage
 
-		String[] empInvChoice = {" ", "Appliances", "Furniture", "Electronics"};
 		empViewInvPanel = new JPanel();  //main view inventory page
 		empViewInvPanelSelection = new JPanel(); //selection part of the page
 		empViewInvPanelBack = new JPanel(); //where back button will be
@@ -400,6 +434,18 @@ public class final_pos extends JFrame{
 				empPage.remove(empViewInvPanel);
 				empPage.add(empManipulation);
 				empPage.add(empBtmPanel, BorderLayout.SOUTH);
+				empPage.add(new JLabel("Employee Home"), BorderLayout.NORTH);
+				setContentPane(empPage);
+				revalidate();
+				repaint();
+			}
+		}
+	}
+	class editInventory implements ActionListener{
+		public void actionPerformed(ActionEvent evt) {
+			if(evt.getSource() == empEditInv) {
+				empPage.remove(empManipulation);
+				empPage.add(empEditInv);
 				setContentPane(empPage);
 				revalidate();
 				repaint();
