@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.*;
 
@@ -29,14 +32,14 @@ public class final_pos extends JFrame{
 	private JButton furnBtn;
 	private JButton shopBackBtn;
 	private JButton shopCartBtn;
+	private JButton appCartBtn;
 	private JButton empBackBtn;
-	private JButton checkInv;
-	private JButton updateInv;
-	private JButton changePrice;
+	private JButton appBackBtn;
 	private JButton empViewInv;
 	private JButton empViewInvBackBtn;
 	private JButton empEditInvAddBtn;
 	private JButton empEditInvDelBtn;
+	private JButton appSubmitBtn;
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -45,6 +48,7 @@ public class final_pos extends JFrame{
 	private JPanel categPanel;
 	private JPanel shopBtmPanel;
 	private JPanel empBtmPanel;
+	private JPanel appBtmPanel;
 	private JPanel appPage;
 	private JPanel appTable;
 	private JPanel empManipulation;
@@ -63,6 +67,8 @@ public class final_pos extends JFrame{
 	
 	private JComboBox<String> empViewInvChoice;
 	private JComboBox<String> empEditInvBox;
+
+	private Map<String, JTextField> quantityFields = new HashMap<>();
 	
 	private String[] empInvChoice = {" ", "Appliances", "Furniture", "Electronics"};
 	
@@ -319,8 +325,92 @@ public class final_pos extends JFrame{
 /*--------------------------------------------------------------------------*/
 		//APPLIANCE PAGE
 		appPage= new JPanel();
-		appPage.setLayout(new BorderLayout()); 		
+		appPage.setLayout(new BorderLayout()); 	
+		JLabel jlabel_app=new JLabel("Appliances", SwingConstants.CENTER);//adds the text and makes sure its centered
+		intro.add(jlabel_app, BorderLayout.NORTH);//label is added to the app and placed at the top
+		jlabel_app.setFont(new Font("Serif",Font.PLAIN,50));
 		
+		JPanel applabelPanel = new JPanel();
+		applabelPanel.setLayout(new BoxLayout(applabelPanel, BoxLayout.Y_AXIS)); // Stack labels vertically
+		
+		// Wrapper to vertically center applabelPanel
+		JPanel centerWrapper = new JPanel();
+		centerWrapper.setLayout(new BoxLayout(centerWrapper, BoxLayout.Y_AXIS));
+		centerWrapper.add(Box.createVerticalGlue());        // pushes content down
+		centerWrapper.add(applabelPanel);                   // your label panel
+		centerWrapper.add(Box.createVerticalGlue());        // pushes content up
+		
+		try {
+		    String query = "SELECT Name, Price FROM Appliances";
+		    Connection c1 = getConnection();
+		    PreparedStatement ps = c1.prepareStatement(query);
+		    ResultSet rs = ps.executeQuery();
+		    while (rs.next()) {
+		        String appName = rs.getString("Name");
+		        double appPrice = rs.getDouble("Price");
+
+		        JPanel rowPanel = new JPanel();
+		        rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
+		        rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		       
+		        JLabel appNamelabel = new JLabel(appName);
+		        JLabel appPricelabel = new JLabel(String.format("%.2f",appPrice));
+		        JTextField appQfield = new JTextField();
+		        appQfield.setText("0");
+		        appQfield.setEditable(true);
+		    	appQfield.setPreferredSize(new Dimension(150, 25));
+		        appQfield.setMaximumSize(new Dimension(150, 25));
+		        appNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        appPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        
+		        quantityFields.put(appName, appQfield); //gets the info from each text field
+		       
+		        rowPanel.add(appNamelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(appPricelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(appQfield);
+		        applabelPanel.add(rowPanel);
+		        applabelPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+		    }
+		} catch (SQLException e) {
+		    System.out.println(e.getMessage());
+		}
+		
+		//Submit button to confirm quantity
+		JPanel appSubmitRow = new JPanel();
+		appSubmitBtn = new JButton("Submit");
+		appSubmitBtn.setFont(new Font("Serif",Font.PLAIN,20));
+		appSubmitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+		appSubmitRow.add(appSubmitBtn);
+		
+		
+		// Add the label panel to the center of your main page
+		appBtmPanel = new JPanel();
+		appBtmPanel.setLayout(new BoxLayout(appBtmPanel, BoxLayout.X_AXIS));
+		
+		appBackBtn = new JButton("Back");
+		appBackBtn.setFont(new Font("Serif", Font.BOLD, 24));
+		appBackBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+		
+		appCartBtn = new JButton("Cart: 0");
+		appCartBtn.setFont(new Font("Serif", Font.BOLD, 24));
+		appCartBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		
+		appBtmPanel.add(appBackBtn);
+		appBtmPanel.add(Box.createHorizontalGlue());
+		appBtmPanel.add(appCartBtn);
+		
+		appPage.add(jlabel_app, BorderLayout.NORTH);
+		centerWrapper.add(appSubmitRow);
+		appPage.add(centerWrapper, BorderLayout.CENTER);
+		appPage.add(appBtmPanel, BorderLayout.SOUTH);
+		
+		
+		BackToShopPage backToShop = new BackToShopPage();
+		appBackBtn.addActionListener(backToShop);
+		ToCategPage toCateg = new ToCategPage();
+		appBtn.addActionListener(toCateg);
 		
 		setVisible(true);//makes sure everything done previously is seen
 	}
@@ -409,7 +499,24 @@ public class final_pos extends JFrame{
 			}
 			}
 		}
-	
+	class BackToShopPage implements ActionListener{
+		public void actionPerformed(ActionEvent evt) {
+			if(evt.getSource() == appBackBtn) {
+				setContentPane(shopPage);
+				revalidate();
+				repaint();
+			}
+		}
+	}
+	class ToCategPage implements ActionListener{
+		public void actionPerformed(ActionEvent evt) {
+			if(evt.getSource() == appBtn) {
+				setContentPane(appPage);
+				revalidate();
+				repaint();
+			}
+		}
+	}
 	class EmpDisplayInv implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
 			if(evt.getSource() == empViewInv) {
