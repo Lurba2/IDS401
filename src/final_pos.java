@@ -239,7 +239,7 @@ public class final_pos extends JFrame{
 		empBtmPanel.setLayout(new BoxLayout(empBtmPanel, BoxLayout.X_AXIS));
 		empPage.add(empManipulation, BorderLayout.CENTER);
 		empBackBtn = new JButton("Back");
-		empBackBtn.setFont(new Font("Serif", Font.BOLD, 24));
+		empBackBtn.setFont(font1);
 		empBackBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
 		empBtmPanel.add(empBackBtn);
 		empPage.add(empBtmPanel, BorderLayout.SOUTH);
@@ -251,26 +251,35 @@ public class final_pos extends JFrame{
 		String[] empInvChoice = {" ", "Appliances", "Furniture", "Electronics"};
 		empViewInvPanel = new JPanel();  //main view inventory page
 		empViewInvPanelSelection = new JPanel(); //selection part of the page
-		empViewInvPanelBack = new JPanel();
+		empViewInvPanelBack = new JPanel(); //where back button will be
 		empViewInvPanelBack.setLayout(new BoxLayout(empViewInvPanelBack, BoxLayout.X_AXIS));
 		empViewInvBackBtn = new JButton("Back");
+		empViewInvBackBtn.setFont(font1);
+		empViewInvBackBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
 		empViewInvPanelBack.add(empViewInvBackBtn);
 		
-		empViewInvResult = new JTextArea(); //where our inventory will be output.
+		backToEmpPage backToEmpPage1 = new backToEmpPage();
+		empViewInvBackBtn.addActionListener(backToEmpPage1);
+		
+		empViewInvResult = new JTextArea();
+		empViewInvResult.setEditable(false);//where our inventory will be output.
 
 		empViewInvPanelSelection.setLayout(new FlowLayout());
 		
-		empViewInvPanel.setLayout(new GridLayout(3,1));
+		empViewInvPanel.setLayout(new BorderLayout());
 		JLabel empViewInvResultChoice = new JLabel("View inventory from");
+		Font empViewInvChoiceFont = new Font("Seriff", Font.BOLD, 36);
+		empViewInvResultChoice.setFont(empViewInvChoiceFont);
 		empViewInvPanelSelection.add(empViewInvResultChoice);
 		empViewInvPanel.add(new JScrollPane(empViewInvResult));
 		empViewInvChoice = new JComboBox<>(empInvChoice);
+		empViewInvChoice.setFont(empViewInvChoiceFont);
 		empViewInvPanelSelection.add(empViewInvChoice);
-		empViewInvPanel.add(empViewInvPanelSelection, 1, 1);
+		empViewInvPanel.add(empViewInvPanelSelection, BorderLayout.NORTH);
 		empViewInvChoiceListener empViewInvChoiceListener1 = new empViewInvChoiceListener();
 		empViewInvChoice.addActionListener(empViewInvChoiceListener1);
 		
-		empViewInvPanel.add(empViewInvPanelBack); //back button
+		empViewInvPanel.add(empViewInvPanelBack, BorderLayout.SOUTH); //back button
 		empViewInvPanelBack.setFont(new Font("Serif", Font.BOLD, 24));
 
 /*--------------------------------------------------------------------------*/
@@ -370,7 +379,6 @@ public class final_pos extends JFrame{
 	class EmpDisplayInv implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
 			if(evt.getSource() == empViewInv) {
-				EmpInv();
 				empPage.remove(empManipulation);
 				empPage.add(empViewInvPanel);
 				setContentPane(empViewInvPanel);
@@ -379,11 +387,23 @@ public class final_pos extends JFrame{
 			}
 		}
 	}
-		class empViewInvChoiceListener implements ActionListener{
-			public void actionPerformed(ActionEvent evt) {
-				if(evt.getSource() == empViewInvChoice) {
-					EmpInv();
-				}
+	class empViewInvChoiceListener implements ActionListener{
+		public void actionPerformed(ActionEvent evt) {
+			if(evt.getSource() == empViewInvChoice) {
+				EmpInv();
 			}
 		}
+	}
+	class backToEmpPage implements ActionListener{
+		public void actionPerformed(ActionEvent evt) {
+			if(evt.getSource() == empViewInvBackBtn) {
+				empPage.remove(empViewInvPanel);
+				empPage.add(empManipulation);
+				empPage.add(empBtmPanel, BorderLayout.SOUTH);
+				setContentPane(empPage);
+				revalidate();
+				repaint();
+			}
+		}
+	}
 	}
