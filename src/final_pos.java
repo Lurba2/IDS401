@@ -511,10 +511,8 @@ public class final_pos extends JFrame{
 		elecPage.add(elecBtmPanel, BorderLayout.SOUTH);
 		
 		
-		BackToShopPage backToShop2 = new BackToShopPage();
-		elecBackBtn.addActionListener(backToShop2);
-		ToCategPage toCateg2 = new ToCategPage();
-		elecBtn.addActionListener(toCateg2);
+		elecBackBtn.addActionListener(backToShop);
+		elecBtn.addActionListener(toCateg);
 		
 		/*--------------------------------------------------------------------------*/
 		//FURNITURE PAGE
@@ -603,21 +601,18 @@ public class final_pos extends JFrame{
 		pack();
 		
 		
-		BackToShopPage backToShop3 = new BackToShopPage();
-		furnBackBtn.addActionListener(backToShop3);
-		ToCategPage toCateg3 = new ToCategPage();
-		furnBtn.addActionListener(toCateg3);
+
+		furnBackBtn.addActionListener(backToShop);
+		furnBtn.addActionListener(toCateg);
 		
 		
 		/*--------------------------------------------------------------------------*/
 		//Cart Number
 		cartNum=0;
 		cartUpdate cartUpdate = new cartUpdate();
-		cartUpdate cartUpdate2 = new cartUpdate();
-		cartUpdate cartUpdate3 = new cartUpdate();
 		appSubmitBtn.addActionListener(cartUpdate);
-		elecSubmitBtn.addActionListener(cartUpdate2);
-		furnSubmitBtn.addActionListener(cartUpdate3);
+		elecSubmitBtn.addActionListener(cartUpdate);
+		furnSubmitBtn.addActionListener(cartUpdate);
 		
 		/*--------------------------------------------------------------------------*/		
 		
