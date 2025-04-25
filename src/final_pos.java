@@ -15,7 +15,7 @@ public class final_pos extends JFrame{
 	
 
 	private Connection connection;
-	private String dbUrl="jdbc:sqlite:C:/Users/tyler/OneDrive/Desktop/UIC/IDS 401 Labs/Final project/Inventory.db";
+	private String dbUrl="jdbc:sqlite:C:/Users/Leonard/Documents/IDS401FinalPos/Inventory.db";
 	public Connection getConnection() throws SQLException{
 		connection=DriverManager.getConnection(dbUrl);
 		return connection;
@@ -42,13 +42,10 @@ public class final_pos extends JFrame{
 	private JButton empViewInvBackBtn;
 	private JButton empEditInvAddBtn;
 	private JButton empEditInvDelBtn;
-<<<<<<< Updated upstream
 	private JButton appSubmitBtn;
 	private JButton elecSubmitBtn;
 	private JButton furnSubmitBtn;
-=======
 	private JButton empManipulateInv;
->>>>>>> Stashed changes
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -804,34 +801,30 @@ public class final_pos extends JFrame{
 				}
 			}
 		}
-	}
-<<<<<<< Updated upstream
+		class backToEmpPage1 implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empViewInvBackBtn) {
+					empPage.remove(empViewInvPanel);
+					empPage.add(empManipulation);
+					empPage.add(empBtmPanel, BorderLayout.SOUTH);
+					empPage.add(new JLabel("Employee Home"), BorderLayout.NORTH);
+					setContentPane(empPage);
+					revalidate();
+					repaint();
+				}
+			}
+		}
+		class addSubtractInv implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empManipulateInv) {
+					empPage.remove(empManipulation);
+					empPage.remove(empBtmPanel);
+					empPage.add(empEditInv, BorderLayout.CENTER);
+					empPage.add(empViewInvPanelBack, BorderLayout.SOUTH);
+					revalidate();
+					repaint();
+				}
+			}
+		}
 
-=======
-	class backToEmpPage implements ActionListener{
-		public void actionPerformed(ActionEvent evt) {
-			if(evt.getSource() == empViewInvBackBtn) {
-				empPage.remove(empViewInvPanel);
-				empPage.add(empManipulation);
-				empPage.add(empBtmPanel, BorderLayout.SOUTH);
-				empPage.add(new JLabel("Employee Home"), BorderLayout.NORTH);
-				setContentPane(empPage);
-				revalidate();
-				repaint();
-			}
-		}
 	}
-	class editInventory implements ActionListener{
-		public void actionPerformed(ActionEvent evt) {
-			if(evt.getSource() == empManipulateInv) {
-				empPage.remove(empManipulation);
-				empPage.remove(empBtmPanel);
-				empPage.add(empEditInv, BorderLayout.CENTER);
-				empPage.add(empViewInvPanelBack, BorderLayout.SOUTH);
-				revalidate();
-				repaint();
-			}
-		}
-	}
-	}
->>>>>>> Stashed changes
