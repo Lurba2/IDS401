@@ -2,44 +2,49 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import javax.swing.*;
 import java.sql.PreparedStatement;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.*;
-
 
 public class final_pos extends JFrame{
+	
 
 	private Connection connection;
-	private String dbUrl="jdbc:sqlite:C:/Users/Leonard/Documents/IDS401FinalPos/Inventory.db";
+	private String dbUrl="jdbc:sqlite:C:/Users/tyler/OneDrive/Desktop/UIC/IDS 401 Labs/Final project/Inventory.db";
 	public Connection getConnection() throws SQLException{
 		connection=DriverManager.getConnection(dbUrl);
 		return connection;
 	}
 
-	
 	private Container intro;
 	
 	private JButton shopBtn;
 	private JButton empBtn;
 	private JButton logBtn;
 	private JButton appBtn;
-	private JButton clothBtn;
+	private JButton elecBtn;
 	private JButton furnBtn;
 	private JButton shopBackBtn;
 	private JButton shopCartBtn;
 	private JButton appCartBtn;
+	private JButton elecCartBtn;
+	private JButton furnCartBtn;
 	private JButton empBackBtn;
 	private JButton appBackBtn;
+	private JButton furnBackBtn;
+	private JButton elecBackBtn;
 	private JButton empViewInv;
 	private JButton empViewInvBackBtn;
 	private JButton empEditInvAddBtn;
 	private JButton empEditInvDelBtn;
 	private JButton appSubmitBtn;
+	private JButton elecSubmitBtn;
+	private JButton furnSubmitBtn;
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -49,8 +54,8 @@ public class final_pos extends JFrame{
 	private JPanel shopBtmPanel;
 	private JPanel empBtmPanel;
 	private JPanel appBtmPanel;
+	private JPanel furnBtmPanel;
 	private JPanel appPage;
-	private JPanel appTable;
 	private JPanel empManipulation;
 	private JPanel empViewInvPanel;
 	private JPanel empViewInvPanelSelection;
@@ -58,6 +63,8 @@ public class final_pos extends JFrame{
 	private JPanel empEditInv;
 	private JPanel empEditInvSelectPanel;
 	private JPanel empEditInvDel;
+	private JPanel elecPage;
+	private JPanel furnPage;
 	
 	private JTextField userInput;
 	private JTextField passInput;
@@ -67,20 +74,27 @@ public class final_pos extends JFrame{
 	
 	private JComboBox<String> empViewInvChoice;
 	private JComboBox<String> empEditInvBox;
-
+	
 	private Map<String, JTextField> quantityFields = new HashMap<>();
 	
 	private String[] empInvChoice = {" ", "Appliances", "Furniture", "Electronics"};
 	
+	int cartNum;
+	private int parseQty(JTextField f) {
+	    try {
+	      return Integer.parseInt(f.getText().trim());
+	    } catch (NumberFormatException e) {
+	      return 0;  // turns all the textfields into a integer
+	    }
+	}
 	
 	public final_pos() {//constructor
-		setPreferredSize(new Dimension(800,800));;//set size to 800x800
-		setMaximumSize(new Dimension(800,800));
-		setMinimumSize(new Dimension(800,800));
+		setPreferredSize(new Dimension(750,750));;//set size to 800x800
+		setMaximumSize(new Dimension(750,750));
+		setMinimumSize(new Dimension(750,750));
 		setResizable(false); //doesnt allow user to resize the application
 		setLocationByPlatform(true);//depends on the system you use, so it appears in the correct location
 		
-
 
 		//predefined data member on JFrame so the underlying process is also terminated along with the application
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -170,7 +184,6 @@ public class final_pos extends JFrame{
 		empLogIn LogIn=new empLogIn();
 		logBtn.addActionListener(LogIn);
 
-
 /*--------------------------------------------------------------------------*/
 		
 		//SHOP PAGE
@@ -184,15 +197,14 @@ public class final_pos extends JFrame{
 		categPanel = new JPanel();
 		categPanel.setLayout(new BoxLayout(categPanel, BoxLayout.Y_AXIS));
 
-
 		//Buttons for different categories
 		appBtn = new JButton("Appliances");
 		appBtn.setFont(new Font("Serif", Font.BOLD, 24));
 		appBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
-		clothBtn = new JButton("Clothing");
-		clothBtn.setFont(new Font("Serif", Font.BOLD, 24));
-		clothBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+		elecBtn = new JButton("Electronics");
+		elecBtn.setFont(new Font("Serif", Font.BOLD, 24));
+		elecBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		furnBtn = new JButton("Furniture");
 		furnBtn.setFont(new Font("Serif", Font.BOLD, 24));
@@ -219,7 +231,7 @@ public class final_pos extends JFrame{
 		categPanel.add(Box.createRigidArea(new Dimension(0, 150)));
 		categPanel.add(appBtn);
 		categPanel.add(Box.createRigidArea(new Dimension(0, 50)));
-		categPanel.add(clothBtn);
+		categPanel.add(elecBtn);
 		categPanel.add(Box.createRigidArea(new Dimension(0, 50)));
 		categPanel.add(furnBtn);
 		shopPage.add(categPanel, BorderLayout.CENTER);
@@ -229,7 +241,6 @@ public class final_pos extends JFrame{
 		BackToIntro shopBack=new BackToIntro();
 		shopBackBtn.addActionListener(shopBack);
 /*--------------------------------------------------------------------------*/	
-		
 		//EMPLOYEE PAGE
 		empPage= new JPanel();
 		empPage.setLayout(new BorderLayout()); 
@@ -322,17 +333,18 @@ public class final_pos extends JFrame{
 		empViewInvPanel.add(empViewInvPanelBack, BorderLayout.SOUTH); //back button
 		empViewInvPanelBack.setFont(new Font("Serif", Font.BOLD, 24));
 
+
 /*--------------------------------------------------------------------------*/
 		//APPLIANCE PAGE
 		appPage= new JPanel();
 		appPage.setLayout(new BorderLayout()); 	
 		JLabel jlabel_app=new JLabel("Appliances", SwingConstants.CENTER);//adds the text and makes sure its centered
-		intro.add(jlabel_app, BorderLayout.NORTH);//label is added to the app and placed at the top
-		jlabel_app.setFont(new Font("Serif",Font.PLAIN,50));
+		jlabel_app.setFont(new Font("Serif",Font.PLAIN,40));
+
 		
 		JPanel applabelPanel = new JPanel();
 		applabelPanel.setLayout(new BoxLayout(applabelPanel, BoxLayout.Y_AXIS)); // Stack labels vertically
-		
+
 		// Wrapper to vertically center applabelPanel
 		JPanel centerWrapper = new JPanel();
 		centerWrapper.setLayout(new BoxLayout(centerWrapper, BoxLayout.Y_AXIS));
@@ -401,19 +413,219 @@ public class final_pos extends JFrame{
 		appBtmPanel.add(Box.createHorizontalGlue());
 		appBtmPanel.add(appCartBtn);
 		
-		appPage.add(jlabel_app, BorderLayout.NORTH);
+
 		centerWrapper.add(appSubmitRow);
+		appPage.add(jlabel_app, BorderLayout.NORTH);
 		appPage.add(centerWrapper, BorderLayout.CENTER);
 		appPage.add(appBtmPanel, BorderLayout.SOUTH);
+		pack();
 		
 		
 		BackToShopPage backToShop = new BackToShopPage();
 		appBackBtn.addActionListener(backToShop);
 		ToCategPage toCateg = new ToCategPage();
 		appBtn.addActionListener(toCateg);
+
+		/*--------------------------------------------------------------------------*/
+		//Electronics PAGE
+		elecPage= new JPanel();
+		elecPage.setLayout(new BorderLayout()); 	
+		JLabel jlabel_elec=new JLabel("Electronics", SwingConstants.CENTER);//adds the text and makes sure its centered
+		elecPage.add(jlabel_elec, BorderLayout.NORTH);//label is added to the app and placed at the top
+		jlabel_elec.setFont(new Font("Serif",Font.PLAIN,50));
+		
+		JPanel eleclabelPanel = new JPanel();
+		eleclabelPanel.setLayout(new BoxLayout(eleclabelPanel, BoxLayout.Y_AXIS)); // Stack labels vertically
+		
+		// Wrapper to vertically center applabelPanel
+		JPanel centerWrapper2 = new JPanel();
+		centerWrapper2.setLayout(new BoxLayout(centerWrapper2, BoxLayout.Y_AXIS));
+		centerWrapper2.add(Box.createVerticalGlue());        // pushes content down
+		centerWrapper2.add(eleclabelPanel);                   // your label panel
+		centerWrapper2.add(Box.createVerticalGlue());        // pushes content up
+		
+		try {
+		    String query = "SELECT Name, Price FROM Electronics";
+		    Connection c1 = getConnection();
+		    PreparedStatement ps = c1.prepareStatement(query);
+		    ResultSet rs = ps.executeQuery();
+		    while (rs.next()) {
+		        String elecName = rs.getString("Name");
+		        double elecPrice = rs.getDouble("Price");
+
+		        JPanel rowPanel = new JPanel();
+		        rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
+		        rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		       
+		        JLabel elecNamelabel = new JLabel(elecName);
+		        JLabel elecPricelabel = new JLabel(String.format("%.2f",elecPrice));
+		        JTextField elecQfield = new JTextField();
+		        elecQfield.setText("0");
+		        elecQfield.setEditable(true);
+		    	elecQfield.setPreferredSize(new Dimension(150, 25));
+		        elecQfield.setMaximumSize(new Dimension(150, 25));
+		        elecNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        elecPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        
+		        quantityFields.put(elecName, elecQfield); //gets the info from each text field
+		       
+		        rowPanel.add(elecNamelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(elecPricelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(elecQfield);
+		        eleclabelPanel.add(rowPanel);
+		        eleclabelPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+		    }
+		} catch (SQLException e) {
+		    System.out.println(e.getMessage());
+		}
+		
+		//Submit button to confirm quantity
+		JPanel elecSubmitRow = new JPanel();
+		elecSubmitBtn = new JButton("Submit");
+		elecSubmitBtn.setFont(new Font("Serif",Font.PLAIN,20));
+		elecSubmitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+		elecSubmitRow.add(elecSubmitBtn);
+		
+		
+		// Add the label panel to the center of your main page
+		JPanel elecBtmPanel = new JPanel();
+		elecBtmPanel.setLayout(new BoxLayout(elecBtmPanel, BoxLayout.X_AXIS));
+		
+		elecBackBtn = new JButton("Back");
+		elecBackBtn.setFont(new Font("Serif", Font.BOLD, 24));
+		elecBackBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+		
+		elecCartBtn = new JButton("Cart: "+cartNum);
+		elecCartBtn.setFont(new Font("Serif", Font.BOLD, 24));
+		elecCartBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		
+		elecBtmPanel.add(elecBackBtn);
+		elecBtmPanel.add(Box.createHorizontalGlue());
+		elecBtmPanel.add(elecCartBtn);
+		
+		elecPage.add(jlabel_elec, BorderLayout.NORTH);
+		centerWrapper2.add(elecSubmitRow);
+		elecPage.add(centerWrapper2, BorderLayout.CENTER);
+		elecPage.add(elecBtmPanel, BorderLayout.SOUTH);
+		
+		
+		BackToShopPage backToShop2 = new BackToShopPage();
+		elecBackBtn.addActionListener(backToShop2);
+		ToCategPage toCateg2 = new ToCategPage();
+		elecBtn.addActionListener(toCateg2);
+		
+		/*--------------------------------------------------------------------------*/
+		//FURNITURE PAGE
+		furnPage= new JPanel();
+		furnPage.setLayout(new BorderLayout()); 	
+		JLabel jlabel_furn=new JLabel("Furniture", SwingConstants.CENTER);//adds the text and makes sure its centered
+		jlabel_furn.setFont(new Font("Serif",Font.PLAIN,40));
+
+		
+		JPanel furnlabelPanel = new JPanel();
+		furnlabelPanel.setLayout(new BoxLayout(furnlabelPanel, BoxLayout.Y_AXIS)); // Stack labels vertically
+
+		// Wrapper to vertically center applabelPanel
+		JPanel centerWrapper3 = new JPanel();
+		centerWrapper3.setLayout(new BoxLayout(centerWrapper3, BoxLayout.Y_AXIS));
+		centerWrapper3.add(Box.createVerticalGlue());        // pushes content down
+		centerWrapper3.add(furnlabelPanel);                   // your label panel
+		centerWrapper3.add(Box.createVerticalGlue());        // pushes content up
+		
+		try {
+		    String query = "SELECT Name, Price FROM Furniture";
+		    Connection c1 = getConnection();
+		    PreparedStatement ps = c1.prepareStatement(query);
+		    ResultSet rs = ps.executeQuery();
+		    while (rs.next()) {
+		        String furnName = rs.getString("Name");
+		        double furnPrice = rs.getDouble("Price");
+
+		        JPanel rowPanel = new JPanel();
+		        rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
+		        rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		       
+		        JLabel furnNamelabel = new JLabel(furnName);
+		        JLabel furnPricelabel = new JLabel(String.format("%.2f",furnPrice));
+		        JTextField furnQfield = new JTextField();
+		        furnQfield.setText("0");
+		        furnQfield.setEditable(true);
+		    	furnQfield.setPreferredSize(new Dimension(150, 25));
+		        furnQfield.setMaximumSize(new Dimension(150, 25));
+		        furnNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        furnPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        
+		        quantityFields.put(furnName, furnQfield); //gets the info from each text field
+		       
+		        rowPanel.add(furnNamelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(furnPricelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(furnQfield);
+		        furnlabelPanel.add(rowPanel);
+		        furnlabelPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+		    }
+		} catch (SQLException e) {
+		    System.out.println(e.getMessage());
+		}
+		
+		//Submit button to confirm quantity
+		JPanel furnSubmitRow = new JPanel();
+		furnSubmitBtn = new JButton("Submit");
+		furnSubmitBtn.setFont(new Font("Serif",Font.PLAIN,20));
+		furnSubmitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+		furnSubmitRow.add(furnSubmitBtn);
+		
+		
+		// Add the label panel to the center of your main page
+		furnBtmPanel = new JPanel();
+		furnBtmPanel.setLayout(new BoxLayout(furnBtmPanel, BoxLayout.X_AXIS));
+		
+		furnBackBtn = new JButton("Back");
+		furnBackBtn.setFont(new Font("Serif", Font.BOLD, 24));
+		furnBackBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+		
+		furnCartBtn = new JButton("Cart: " + cartNum);
+		furnCartBtn.setFont(new Font("Serif", Font.BOLD, 24));
+		furnCartBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		
+		furnBtmPanel.add(furnBackBtn);
+		furnBtmPanel.add(Box.createHorizontalGlue());
+		furnBtmPanel.add(furnCartBtn);
+		
+
+		centerWrapper3.add(furnSubmitRow);
+		furnPage.add(jlabel_furn, BorderLayout.NORTH);
+		furnPage.add(centerWrapper3, BorderLayout.CENTER);
+		furnPage.add(furnBtmPanel, BorderLayout.SOUTH);
+		pack();
+		
+		
+		BackToShopPage backToShop3 = new BackToShopPage();
+		furnBackBtn.addActionListener(backToShop3);
+		ToCategPage toCateg3 = new ToCategPage();
+		furnBtn.addActionListener(toCateg3);
+		
+		
+		/*--------------------------------------------------------------------------*/
+		//Cart Number
+		cartNum=0;
+		cartUpdate cartUpdate = new cartUpdate();
+		cartUpdate cartUpdate2 = new cartUpdate();
+		cartUpdate cartUpdate3 = new cartUpdate();
+		appSubmitBtn.addActionListener(cartUpdate);
+		elecSubmitBtn.addActionListener(cartUpdate2);
+		furnSubmitBtn.addActionListener(cartUpdate3);
+		
+		/*--------------------------------------------------------------------------*/		
+		
 		
 		setVisible(true);//makes sure everything done previously is seen
 	}
+
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		final_pos connect1 = new final_pos();
@@ -423,6 +635,7 @@ public class final_pos extends JFrame{
 		}catch(SQLException e) {
 			System.out.println(e.getMessage());
 		}
+		
 	}
 
 	class IntroToPage implements ActionListener{
@@ -439,9 +652,7 @@ public class final_pos extends JFrame{
 				revalidate();
 				repaint();
 			}
-
 			}
-
 
 		}
 	//----Calls employee view of items-----
@@ -485,7 +696,8 @@ public class final_pos extends JFrame{
 				}
 		}
 		}
-	}
+
+			}
 	class BackToIntro implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
 			if (evt.getSource()==shopBackBtn ||evt.getSource()== empBackBtn){
@@ -497,21 +709,35 @@ public class final_pos extends JFrame{
 				revalidate();
 				repaint();
 			}
+
 			}
+
 		}
 	class BackToShopPage implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
-			if(evt.getSource() == appBackBtn) {
+			if(evt.getSource() == appBackBtn || evt.getSource() == elecBackBtn || evt.getSource() == furnBackBtn) {
 				setContentPane(shopPage);
 				revalidate();
 				repaint();
 			}
 		}
 	}
+	
 	class ToCategPage implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
 			if(evt.getSource() == appBtn) {
 				setContentPane(appPage);
+				revalidate();
+				repaint();
+				pack();
+			}
+			else if(evt.getSource()==elecBtn) {
+				setContentPane(elecPage);
+				revalidate();
+				repaint();
+			}
+			else if(evt.getSource()==furnBtn) {
+				setContentPane(furnPage);
 				revalidate();
 				repaint();
 			}
@@ -520,6 +746,7 @@ public class final_pos extends JFrame{
 	class EmpDisplayInv implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
 			if(evt.getSource() == empViewInv) {
+				EmpInv();
 				empPage.remove(empManipulation);
 				empPage.add(empViewInvPanel);
 				setContentPane(empViewInvPanel);
@@ -528,35 +755,54 @@ public class final_pos extends JFrame{
 			}
 		}
 	}
-	class empViewInvChoiceListener implements ActionListener{
-		public void actionPerformed(ActionEvent evt) {
-			if(evt.getSource() == empViewInvChoice) {
-				EmpInv();
+		class empViewInvChoiceListener implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empViewInvChoice) {
+					EmpInv();
+				}
+			}
+		}
+		class backToEmpPage implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empViewInvBackBtn) {
+					empPage.remove(empViewInvPanel);
+					empPage.add(empManipulation);
+					empPage.add(empBtmPanel, BorderLayout.SOUTH);
+					empPage.add(new JLabel("Employee Home"), BorderLayout.NORTH);
+					setContentPane(empPage);
+					revalidate();
+					repaint();
+				}
+			}
+		}
+		class editInventory implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empEditInv) {
+					empPage.remove(empManipulation);
+					empPage.add(empEditInv);
+					setContentPane(empPage);
+					revalidate();
+					repaint();
+				}
+			}
+		}
+		class cartUpdate implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == appSubmitBtn||evt.getSource() == elecSubmitBtn||evt.getSource() == furnSubmitBtn) {
+					  int total = 0;
+					  for (JTextField field : quantityFields.values()) {
+					    total += parseQty(field);
+					  }
+
+					  cartNum = total;   
+					        appCartBtn.setText("Cart: " + cartNum);
+					        elecCartBtn.setText("Cart: " + cartNum);
+					        furnCartBtn.setText("Cart: " + cartNum);
+					        shopCartBtn.setText("Cart: " + cartNum);
+
+					    
+				}
 			}
 		}
 	}
-	class backToEmpPage implements ActionListener{
-		public void actionPerformed(ActionEvent evt) {
-			if(evt.getSource() == empViewInvBackBtn) {
-				empPage.remove(empViewInvPanel);
-				empPage.add(empManipulation);
-				empPage.add(empBtmPanel, BorderLayout.SOUTH);
-				empPage.add(new JLabel("Employee Home"), BorderLayout.NORTH);
-				setContentPane(empPage);
-				revalidate();
-				repaint();
-			}
-		}
-	}
-	class editInventory implements ActionListener{
-		public void actionPerformed(ActionEvent evt) {
-			if(evt.getSource() == empEditInv) {
-				empPage.remove(empManipulation);
-				empPage.add(empEditInv);
-				setContentPane(empPage);
-				revalidate();
-				repaint();
-			}
-		}
-	}
-	}
+
