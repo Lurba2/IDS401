@@ -42,9 +42,13 @@ public class final_pos extends JFrame{
 	private JButton empViewInvBackBtn;
 	private JButton empEditInvAddBtn;
 	private JButton empEditInvDelBtn;
+<<<<<<< Updated upstream
 	private JButton appSubmitBtn;
 	private JButton elecSubmitBtn;
 	private JButton furnSubmitBtn;
+=======
+	private JButton empManipulateInv;
+>>>>>>> Stashed changes
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -248,7 +252,7 @@ public class final_pos extends JFrame{
 		empManipulation.setLayout(new GridLayout(3,1, 10, 10));
 		
 		Font font1= new Font("Serif", Font.BOLD, 24);
-		JButton empManipulateInv = new JButton("Add/Delete Inventory");
+		empManipulateInv = new JButton("Add/Delete Inventory");
 		empManipulateInv.setFont(font1);
 		empViewInv = new JButton("View Inventory");
 		empViewInv.setFont(font1);
@@ -296,7 +300,7 @@ public class final_pos extends JFrame{
 		empEditInvView = new JTextArea();
 		empEditInvView.setEditable(false);
 		empEditInvDel.add(empEditInvView);
-		empEditInv.add(empEditInvDel, BorderLayout.CENTER);
+		//empEditInv.add(empEditInvDel, BorderLayout.CENTER);
 		
 		//EmployeeViewInventoryPage
 
@@ -744,6 +748,7 @@ public class final_pos extends JFrame{
 				EmpInv();
 				empPage.remove(empManipulation);
 				empPage.add(empViewInvPanel);
+				empPage.add(empBtmPanel, BorderLayout.SOUTH);
 				setContentPane(empViewInvPanel);
 				revalidate();
 				repaint();
@@ -800,4 +805,33 @@ public class final_pos extends JFrame{
 			}
 		}
 	}
+<<<<<<< Updated upstream
 
+=======
+	class backToEmpPage implements ActionListener{
+		public void actionPerformed(ActionEvent evt) {
+			if(evt.getSource() == empViewInvBackBtn) {
+				empPage.remove(empViewInvPanel);
+				empPage.add(empManipulation);
+				empPage.add(empBtmPanel, BorderLayout.SOUTH);
+				empPage.add(new JLabel("Employee Home"), BorderLayout.NORTH);
+				setContentPane(empPage);
+				revalidate();
+				repaint();
+			}
+		}
+	}
+	class editInventory implements ActionListener{
+		public void actionPerformed(ActionEvent evt) {
+			if(evt.getSource() == empManipulateInv) {
+				empPage.remove(empManipulation);
+				empPage.remove(empBtmPanel);
+				empPage.add(empEditInv, BorderLayout.CENTER);
+				empPage.add(empViewInvPanelBack, BorderLayout.SOUTH);
+				revalidate();
+				repaint();
+			}
+		}
+	}
+	}
+>>>>>>> Stashed changes
