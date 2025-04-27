@@ -46,6 +46,7 @@ public class final_pos extends JFrame{
 	private JButton elecSubmitBtn;
 	private JButton furnSubmitBtn;
 	private JButton empManipulateInv;
+	private JButton empEditInvBackBtn;
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -66,6 +67,7 @@ public class final_pos extends JFrame{
 	private JPanel empEditInvDel;
 	private JPanel elecPage;
 	private JPanel furnPage;
+	private JPanel empEditInvBack;
 	
 	private JTextField userInput;
 	private JTextField passInput;
@@ -274,8 +276,8 @@ public class final_pos extends JFrame{
 		empBackBtn.addActionListener(Back);
 		
 		//employee add/subtract inventory
-		editInventory editInventory1 = new editInventory();
-		empManipulateInv.addActionListener(editInventory1);
+		addSubtractInv addSubInv = new addSubtractInv();
+		empManipulateInv.addActionListener(addSubInv);
 		
 		empEditInv = new JPanel();
 		empEditInv.setLayout(new BorderLayout());
@@ -297,6 +299,14 @@ public class final_pos extends JFrame{
 		empEditInvView = new JTextArea();
 		empEditInvView.setEditable(false);
 		empEditInvDel.add(empEditInvView);
+		
+		empEditInvBack = new JPanel();
+		empEditInvBack.setLayout(new FlowLayout());
+		backToEmpPage1 backToEmpPage3 = new backToEmpPage1();
+		empEditInvBackBtn = new JButton("Back");
+		empEditInvBackBtn.addActionListener(backToEmpPage3);
+		empEditInvBack.add(empEditInvBackBtn);
+		empEditInv.add(empEditInvBack, BorderLayout.SOUTH);
 		//empEditInv.add(empEditInvDel, BorderLayout.CENTER);
 		
 		//EmployeeViewInventoryPage
@@ -310,8 +320,8 @@ public class final_pos extends JFrame{
 		empViewInvBackBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
 		empViewInvPanelBack.add(empViewInvBackBtn);
 		
-		backToEmpPage backToEmpPage1 = new backToEmpPage();
-		empViewInvBackBtn.addActionListener(backToEmpPage1);
+		backToEmpPage1 backToEmpPage2 = new backToEmpPage1();
+		empViewInvBackBtn.addActionListener(backToEmpPage2); //what i changed
 		
 		empViewInvResult = new JTextArea();
 		empViewInvResult.setEditable(false);//where our inventory will be output.
@@ -742,11 +752,10 @@ public class final_pos extends JFrame{
 	class EmpDisplayInv implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
 			if(evt.getSource() == empViewInv) {
-				EmpInv();
 				empPage.remove(empManipulation);
-				empPage.add(empViewInvPanel);
-				empPage.add(empBtmPanel, BorderLayout.SOUTH);
-				setContentPane(empViewInvPanel);
+				empPage.remove(empBtmPanel);
+				empPage.add(empViewInvPanel, BorderLayout.CENTER);
+				setContentPane(empPage);
 				revalidate();
 				repaint();
 			}
@@ -772,9 +781,9 @@ public class final_pos extends JFrame{
 				}
 			}
 		}
-		class editInventory implements ActionListener{
+		class editInventory1 implements ActionListener{
 			public void actionPerformed(ActionEvent evt) {
-				if(evt.getSource() == empEditInv) {
+				if(evt.getSource() == empManipulateInv) {
 					empPage.remove(empManipulation);
 					empPage.add(empEditInv);
 					setContentPane(empPage);
@@ -811,6 +820,14 @@ public class final_pos extends JFrame{
 					setContentPane(empPage);
 					revalidate();
 					repaint();
+				} else if(evt.getSource() == empEditInvBackBtn) {
+					empPage.remove(empEditInv);
+					empPage.add(empManipulation);
+					empPage.add(empBtmPanel, BorderLayout.SOUTH);
+					empPage.add(new JLabel("Employee Home"), BorderLayout.NORTH);
+					setContentPane(empPage);
+					revalidate();
+					repaint();
 				}
 			}
 		}
@@ -820,9 +837,9 @@ public class final_pos extends JFrame{
 					empPage.remove(empManipulation);
 					empPage.remove(empBtmPanel);
 					empPage.add(empEditInv, BorderLayout.CENTER);
-					empPage.add(empViewInvPanelBack, BorderLayout.SOUTH);
-					revalidate();
-					repaint();
+					setContentPane(empPage);
+					empPage.revalidate();
+					empPage.repaint();
 				}
 			}
 		}
