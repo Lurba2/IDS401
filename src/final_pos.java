@@ -80,6 +80,7 @@ public class final_pos extends JFrame{
 	private JPanel empEditInvDelName;
 	private JPanel empEditInvDelSubmitPanel;
 	private JPanel empEditInvDelResultsPanel;
+	private JPanel empEditInvResultPanel;
 	
 	private JTextField userInput;
 	private JTextField passInput;
@@ -95,6 +96,7 @@ public class final_pos extends JFrame{
 	private JComboBox<String> empEditInvBox1;
 	
 	public JLabel empEditInvDelResults;
+	public JLabel empEditInvResult;
 	
 	Font font2 = new Font("Seriff", Font.BOLD, 30);
 	
@@ -348,12 +350,12 @@ public class final_pos extends JFrame{
 		
 		empEditInvDelResultsPanel = new JPanel();
 		empEditInvDelResults = new JLabel();
+		empEditInvDelResults.setFont(font2);
 		empEditInvDel.add(empEditInvDelResults);
 		empEditInvDel.add(empEditInvDelResultsPanel);
 		
 		empEditInvAdd = new JPanel();
 		empEditInvAdd.setLayout(new BoxLayout(empEditInvAdd, BoxLayout.Y_AXIS));
-		empEditInvAdd.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		empEditInvBox1 = new JComboBox<>(empInvChoice);
 		empEditInvBox1.setFont(font2);
 		JLabel empEditInvCat = new JLabel("Category:");
@@ -393,9 +395,16 @@ public class final_pos extends JFrame{
 		
 		empEditInvSubmitPanel = new JPanel();
 		empEditInvAddBtnSubmit = new JButton("Submit");
+		addInvListener a1 = new addInvListener();
+		empEditInvAddBtnSubmit.addActionListener(a1);
 		empEditInvAddBtnSubmit.setFont(font2);
 		empEditInvSubmitPanel.add(empEditInvAddBtnSubmit);
 		empEditInvAdd.add(empEditInvSubmitPanel);
+		
+		empEditInvResultPanel = new JPanel();
+		empEditInvResult = new JLabel();
+		empEditInvResultPanel.add(empEditInvResult);
+		empEditInvAdd.add(empEditInvResultPanel);
 		
 		empEditInvBack = new JPanel();
 		empEditInvBack.setLayout(new BoxLayout(empEditInvBack, BoxLayout.X_AXIS));
@@ -764,7 +773,7 @@ public class final_pos extends JFrame{
 			empViewInvCall = "SELECT * FROM " + selectedTable + " WHERE Quantity != 0";
 			Statement stmtEmpViewInv = connection.createStatement();
 			ResultSet rsEmpViewInv = stmtEmpViewInv.executeQuery(empViewInvCall);
-			empViewInvResult.setText(" ");
+			empViewInvResult.setText("");
 			while (rsEmpViewInv.next()){
 				String name= rsEmpViewInv.getString("Name");
 				int quantity = rsEmpViewInv.getInt("Quantity");
@@ -795,6 +804,38 @@ public class final_pos extends JFrame{
 			}
 		} catch(SQLException e) {
 			System.out.println(e.getMessage() + deleteStatement);
+		}
+	}
+	public void empAddInv() throws Error{
+		String addCategory = "";
+		String addName = "";
+		String addQuantity = "";
+		String addPrice = "";
+		int addQuantity1;
+		double addPrice1;
+		String Query = "";
+		try {
+			Connection connection = DriverManager.getConnection(dbUrl);
+			addCategory = (String) empEditInvBox1.getSelectedItem();
+			addName = (String) empEditInvNameField.getText();
+			addPrice = (String) empEditInvPrice.getText();
+			addQuantity = (String) empEditInvQuantity.getText();
+			addPrice1 = Double.parseDouble(addPrice);
+			addQuantity1 = Integer.parseInt(addQuantity);
+			Query = "INSERT INTO " + addCategory + "(Name, Price, Quantity) VALUES (?, ?, ?)";
+			PreparedStatement stmt = connection.prepareStatement(Query);
+			stmt.setString(1, addName);
+			stmt.setDouble(2, addPrice1);
+			stmt.setInt(3, addQuantity1);
+			
+			int amountAdded = stmt.executeUpdate();
+			if(amountAdded == 0) {
+				empEditInvResult.setText("Did not work");
+			} else {
+				empEditInvResult.setText("Item has been added");
+			}
+		} catch(SQLException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 	//Employee Login after pressing log in
@@ -868,6 +909,8 @@ public class final_pos extends JFrame{
 				empPage.remove(empManipulation);
 				empPage.remove(empBtmPanel);
 				empPage.add(empViewInvPanel, BorderLayout.CENTER);
+				empViewInvResult.setText("");
+				empViewInvChoice.setSelectedItem(" ");
 				setContentPane(empPage);
 				revalidate();
 				repaint();
@@ -980,6 +1023,13 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empEditInvDelSubmit) {
 					empDeleteInv();
+				}
+			}
+		}
+		class addInvListener implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empEditInvAddBtnSubmit) {
+					empAddInv();
 				}
 			}
 		}
