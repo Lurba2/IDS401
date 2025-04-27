@@ -79,6 +79,7 @@ public class final_pos extends JFrame{
 	private JPanel empEditInvDelCategory;
 	private JPanel empEditInvDelName;
 	private JPanel empEditInvDelSubmitPanel;
+	private JPanel empEditInvDelResultsPanel;
 	
 	private JTextField userInput;
 	private JTextField passInput;
@@ -92,6 +93,8 @@ public class final_pos extends JFrame{
 	private JComboBox<String> empViewInvChoice;
 	private JComboBox<String> empEditInvBox;
 	private JComboBox<String> empEditInvBox1;
+	
+	public JLabel empEditInvDelResults;
 	
 	Font font2 = new Font("Seriff", Font.BOLD, 30);
 	
@@ -318,7 +321,7 @@ public class final_pos extends JFrame{
 		
 		empEditInvDel = new JPanel();
 		empEditInvDel.setLayout(new BoxLayout(empEditInvDel, BoxLayout.Y_AXIS));
-		empEditInvBox = new JComboBox<>(empInvChoice);
+		empEditInvBox = new JComboBox<>(empInvChoice); //where category delete is held
 		empEditInvBox.setFont(font2);
 		JLabel empEditInvCategory1 = new JLabel("Category:");
 		empEditInvCategory1.setFont(font2);
@@ -330,17 +333,23 @@ public class final_pos extends JFrame{
 		empEditInvDelName = new JPanel();
 		empDeleteInvChoice.setFont(font2);
 		empEditInvDelName.add(empDeleteInvChoice);
-		empDeleteInvName = new JTextField(10);
+		empDeleteInvName = new JTextField(10); //where name delete is 
 		empDeleteInvName.setFont(font2);
 		empEditInvDelName.add(empDeleteInvName);
 		empEditInvDel.add(empEditInvDelName);
 		
 		empEditInvDelSubmitPanel = new JPanel();
 		empEditInvDelSubmit = new JButton("Submit");
+		deleteInventoryListener d1 = new deleteInventoryListener();
+		empEditInvDelSubmit.addActionListener(d1);
 		empEditInvDelSubmit.setFont(font2);
 		empEditInvDelSubmitPanel.add(empEditInvDelSubmit);
 		empEditInvDel.add(empEditInvDelSubmitPanel);
 		
+		empEditInvDelResultsPanel = new JPanel();
+		empEditInvDelResults = new JLabel();
+		empEditInvDel.add(empEditInvDelResults);
+		empEditInvDel.add(empEditInvDelResultsPanel);
 		
 		empEditInvAdd = new JPanel();
 		empEditInvAdd.setLayout(new BoxLayout(empEditInvAdd, BoxLayout.Y_AXIS));
@@ -768,6 +777,26 @@ public class final_pos extends JFrame{
 			System.out.println(e.getMessage() +empViewInvCall );
 		}
 	}
+	public void empDeleteInv() throws Error{
+		String deleteName = "";
+		String deleteTable = "";
+		String deleteStatement = "";
+		try{
+			Connection connection = DriverManager.getConnection(dbUrl);
+			deleteName = (String) empDeleteInvName.getText();
+			deleteTable = (String) empEditInvBox.getSelectedItem();
+			deleteStatement = "DELETE FROM " + deleteTable + " WHERE Name = " + "'" +deleteName + "'";
+			PreparedStatement stmt = connection.prepareStatement(deleteStatement);
+			int amountDeleted = stmt.executeUpdate();
+			if(amountDeleted == 0) {
+				empEditInvDelResults.setText("Zero items deleted.");
+			} else {
+				empEditInvDelResults.setText("Item has been deleted.");
+			}
+		} catch(SQLException e) {
+			System.out.println(e.getMessage() + deleteStatement);
+		}
+	}
 	//Employee Login after pressing log in
 	class empLogIn implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
@@ -944,6 +973,13 @@ public class final_pos extends JFrame{
 					empEditInv.add(empEditInvAdd);
 					empPage.revalidate();
 					empPage.repaint();
+				}
+			}
+		}
+		class deleteInventoryListener implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empEditInvDelSubmit) {
+					empDeleteInv();
 				}
 			}
 		}
