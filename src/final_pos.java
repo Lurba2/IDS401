@@ -301,15 +301,13 @@ public class final_pos extends JFrame{
 		empEditInvDel.add(empEditInvView);
 		
 		empEditInvBack = new JPanel();
-		empEditInvBack.setLayout(new FlowLayout());
+		empEditInvBack.setLayout(new BoxLayout(empEditInvBack, BoxLayout.X_AXIS));
 		backToEmpPage1 backToEmpPage3 = new backToEmpPage1();
 		empEditInvBackBtn = new JButton("Back");
+		empEditInvBackBtn.setFont(font1);
 		empEditInvBackBtn.addActionListener(backToEmpPage3);
 		empEditInvBack.add(empEditInvBackBtn);
 		empEditInv.add(empEditInvBack, BorderLayout.SOUTH);
-		//empEditInv.add(empEditInvDel, BorderLayout.CENTER);
-		
-		//EmployeeViewInventoryPage
 
 		empViewInvPanel = new JPanel();  //main view inventory page
 		empViewInvPanelSelection = new JPanel(); //selection part of the page
@@ -317,7 +315,6 @@ public class final_pos extends JFrame{
 		empViewInvPanelBack.setLayout(new BoxLayout(empViewInvPanelBack, BoxLayout.X_AXIS));
 		empViewInvBackBtn = new JButton("Back");
 		empViewInvBackBtn.setFont(font1);
-		empViewInvBackBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
 		empViewInvPanelBack.add(empViewInvBackBtn);
 		
 		backToEmpPage1 backToEmpPage2 = new backToEmpPage1();
