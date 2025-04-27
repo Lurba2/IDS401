@@ -47,6 +47,8 @@ public class final_pos extends JFrame{
 	private JButton furnSubmitBtn;
 	private JButton empManipulateInv;
 	private JButton empEditInvBackBtn;
+	private JButton empEditInvAddBtnSubmit;
+	private JButton empEditInvDelSubmit;
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -68,15 +70,30 @@ public class final_pos extends JFrame{
 	private JPanel elecPage;
 	private JPanel furnPage;
 	private JPanel empEditInvBack;
+	private JPanel empEditInvAdd;
+	private JPanel empEditInvCategory;
+	private JPanel empEditInvNamePanel;
+	private JPanel empEditInvPricePanel;
+	private JPanel empEditInvQuantityPanel;
+	private JPanel empEditInvSubmitPanel;
+	private JPanel empEditInvDelCategory;
+	private JPanel empEditInvDelName;
+	private JPanel empEditInvDelSubmitPanel;
 	
 	private JTextField userInput;
 	private JTextField passInput;
+	private JTextField empDeleteInvName;
+	private JTextField empEditInvPrice;
+	private JTextField empEditInvQuantity;
+	private JTextField empEditInvNameField;
 	
 	private JTextArea empViewInvResult;
-	private JTextArea empEditInvView;
 	
 	private JComboBox<String> empViewInvChoice;
 	private JComboBox<String> empEditInvBox;
+	private JComboBox<String> empEditInvBox1;
+	
+	Font font2 = new Font("Seriff", Font.BOLD, 30);
 	
 	private Map<String, JTextField> quantityFields = new HashMap<>();
 	
@@ -282,8 +299,15 @@ public class final_pos extends JFrame{
 		empEditInv = new JPanel();
 		empEditInv.setLayout(new BorderLayout());
 		empEditInvAddBtn = new JButton("Add");
+		empEditInvAddBtn.setFont(font2);
+		addInv addInv1 = new addInv();
+		empEditInvAddBtn.addActionListener(addInv1);
 		empEditInvDelBtn = new JButton("Delete");
+		empEditInvDelBtn.setFont(font2);
+		deleteInv deleteInv1 = new deleteInv();
+		empEditInvDelBtn.addActionListener(deleteInv1);
 		JLabel empEditInvChoice = new JLabel("Add or Delete Inventory?");
+		empEditInvChoice.setFont(font2);
 		
 		empEditInvSelectPanel = new JPanel();
 		empEditInvSelectPanel.setLayout(new FlowLayout());
@@ -293,12 +317,76 @@ public class final_pos extends JFrame{
 		empEditInv.add(empEditInvSelectPanel, BorderLayout.NORTH);
 		
 		empEditInvDel = new JPanel();
+		empEditInvDel.setLayout(new BoxLayout(empEditInvDel, BoxLayout.Y_AXIS));
 		empEditInvBox = new JComboBox<>(empInvChoice);
-		empEditInvDel.add(new JLabel("What category to delete from?"));
-		empEditInvDel.add(empEditInvBox);
-		empEditInvView = new JTextArea();
-		empEditInvView.setEditable(false);
-		empEditInvDel.add(empEditInvView);
+		empEditInvBox.setFont(font2);
+		JLabel empEditInvCategory1 = new JLabel("Category:");
+		empEditInvCategory1.setFont(font2);
+		empEditInvDelCategory = new JPanel();
+		empEditInvDelCategory.add(empEditInvCategory1);
+		empEditInvDelCategory.add(empEditInvBox);
+		empEditInvDel.add(empEditInvDelCategory);
+		JLabel empDeleteInvChoice = new JLabel("Item name:");
+		empEditInvDelName = new JPanel();
+		empDeleteInvChoice.setFont(font2);
+		empEditInvDelName.add(empDeleteInvChoice);
+		empDeleteInvName = new JTextField(10);
+		empDeleteInvName.setFont(font2);
+		empEditInvDelName.add(empDeleteInvName);
+		empEditInvDel.add(empEditInvDelName);
+		
+		empEditInvDelSubmitPanel = new JPanel();
+		empEditInvDelSubmit = new JButton("Submit");
+		empEditInvDelSubmit.setFont(font2);
+		empEditInvDelSubmitPanel.add(empEditInvDelSubmit);
+		empEditInvDel.add(empEditInvDelSubmitPanel);
+		
+		
+		empEditInvAdd = new JPanel();
+		empEditInvAdd.setLayout(new BoxLayout(empEditInvAdd, BoxLayout.Y_AXIS));
+		empEditInvAdd.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		empEditInvBox1 = new JComboBox<>(empInvChoice);
+		empEditInvBox1.setFont(font2);
+		JLabel empEditInvCat = new JLabel("Category:");
+		empEditInvCat.setFont(font2);
+		empEditInvCategory = new JPanel();
+		empEditInvCategory.add(empEditInvCat);
+		empEditInvCategory.add(empEditInvBox1);
+		empEditInvAdd.add(empEditInvCategory);
+		empEditInvBox1.setFont(font2);
+		
+		empEditInvNamePanel = new JPanel();
+		JLabel empEditInvName = new JLabel("Name of item:");
+		empEditInvNamePanel.add(empEditInvName);
+		empEditInvName.setFont(font2);
+		empEditInvNameField = new JTextField(10);
+		empEditInvNameField.setFont(font2);
+		empEditInvNamePanel.add(empEditInvNameField);
+		empEditInvAdd.add(empEditInvNamePanel);
+		
+		empEditInvPricePanel = new JPanel();
+		JLabel empEditInvAddLabel = new JLabel("Price of item:");
+		empEditInvPricePanel.add(empEditInvAddLabel);
+		empEditInvAddLabel.setFont(font2);
+		empEditInvPrice = new JTextField(10);
+		empEditInvPrice.setFont(font2);
+		empEditInvPricePanel.add(empEditInvPrice);
+		empEditInvAdd.add(empEditInvPricePanel);
+		
+		JLabel empEditInvAddQuantityLabel = new JLabel("Quantity of item:");
+		empEditInvQuantityPanel = new JPanel();
+		empEditInvQuantityPanel.add(empEditInvAddQuantityLabel);
+		empEditInvAddQuantityLabel.setFont(font2);
+		empEditInvQuantity = new JTextField(10);
+		empEditInvQuantity.setFont(font2);
+		empEditInvQuantityPanel.add(empEditInvQuantity);
+		empEditInvAdd.add(empEditInvQuantityPanel);
+		
+		empEditInvSubmitPanel = new JPanel();
+		empEditInvAddBtnSubmit = new JButton("Submit");
+		empEditInvAddBtnSubmit.setFont(font2);
+		empEditInvSubmitPanel.add(empEditInvAddBtnSubmit);
+		empEditInvAdd.add(empEditInvSubmitPanel);
 		
 		empEditInvBack = new JPanel();
 		empEditInvBack.setLayout(new BoxLayout(empEditInvBack, BoxLayout.X_AXIS));
@@ -327,12 +415,11 @@ public class final_pos extends JFrame{
 		
 		empViewInvPanel.setLayout(new BorderLayout());
 		JLabel empViewInvResultChoice = new JLabel("View inventory from");
-		Font empViewInvChoiceFont = new Font("Seriff", Font.BOLD, 36);
-		empViewInvResultChoice.setFont(empViewInvChoiceFont);
+		empViewInvResultChoice.setFont(font2);
 		empViewInvPanelSelection.add(empViewInvResultChoice);
 		empViewInvPanel.add(new JScrollPane(empViewInvResult));
 		empViewInvChoice = new JComboBox<>(empInvChoice);
-		empViewInvChoice.setFont(empViewInvChoiceFont);
+		empViewInvChoice.setFont(font2);
 		empViewInvPanelSelection.add(empViewInvChoice);
 		empViewInvPanel.add(empViewInvPanelSelection, BorderLayout.NORTH);
 		empViewInvChoiceListener empViewInvChoiceListener1 = new empViewInvChoiceListener();
@@ -840,5 +927,24 @@ public class final_pos extends JFrame{
 				}
 			}
 		}
-
+		class deleteInv implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empEditInvDelBtn) {
+					empEditInv.remove(empEditInvAdd);
+					empEditInv.add(empEditInvDel, BorderLayout.CENTER);
+					empPage.revalidate();
+					empPage.repaint();
+				}
+			}
+		}
+		class addInv implements ActionListener{
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empEditInvAddBtn) {
+					empEditInv.remove(empEditInvDel);
+					empEditInv.add(empEditInvAdd);
+					empPage.revalidate();
+					empPage.repaint();
+				}
+			}
+		}
 	}
