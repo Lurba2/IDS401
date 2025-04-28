@@ -320,7 +320,7 @@ public class final_pos extends JFrame{
 		empEditInvSelectPanel.add(empEditInvAddBtn);
 		empEditInvSelectPanel.add(empEditInvDelBtn);
 		empEditInv.add(empEditInvSelectPanel, BorderLayout.NORTH);
-		
+
 		empEditInvDel = new JPanel();
 		empEditInvDel.setLayout(new BoxLayout(empEditInvDel, BoxLayout.Y_AXIS));
 		empEditInvBox = new JComboBox<>(empInvChoice); //where category delete is held
@@ -353,7 +353,7 @@ public class final_pos extends JFrame{
 		empEditInvDelResults.setFont(font2);
 		empEditInvDel.add(empEditInvDelResults);
 		empEditInvDel.add(empEditInvDelResultsPanel);
-		
+
 		empEditInvAdd = new JPanel();
 		empEditInvAdd.setLayout(new BoxLayout(empEditInvAdd, BoxLayout.Y_AXIS));
 		empEditInvBox1 = new JComboBox<>(empInvChoice);
@@ -798,7 +798,7 @@ public class final_pos extends JFrame{
 			PreparedStatement stmt = connection.prepareStatement(deleteStatement);
 			int amountDeleted = stmt.executeUpdate();
 			if(amountDeleted == 0) {
-				empEditInvDelResults.setText("Zero items deleted.");
+				empEditInvDelResults.setText("Item does not exist.");
 			} else {
 				empEditInvDelResults.setText("Item has been deleted.");
 			}
@@ -993,6 +993,8 @@ public class final_pos extends JFrame{
 					empPage.remove(empManipulation);
 					empPage.remove(empBtmPanel);
 					empPage.add(empEditInv, BorderLayout.CENTER);
+					empEditInv.remove(empEditInvAdd);
+					empEditInv.remove(empEditInvDel);
 					setContentPane(empPage);
 					empPage.revalidate();
 					empPage.repaint();
@@ -1004,6 +1006,8 @@ public class final_pos extends JFrame{
 				if(evt.getSource() == empEditInvDelBtn) {
 					empEditInv.remove(empEditInvAdd);
 					empEditInv.add(empEditInvDel, BorderLayout.CENTER);
+					empEditInvBox.setSelectedItem(" ");
+					empDeleteInvName.setText("");
 					empPage.revalidate();
 					empPage.repaint();
 				}
@@ -1014,6 +1018,10 @@ public class final_pos extends JFrame{
 				if(evt.getSource() == empEditInvAddBtn) {
 					empEditInv.remove(empEditInvDel);
 					empEditInv.add(empEditInvAdd);
+					empEditInvBox1.setSelectedItem(" ");
+					empEditInvNameField.setText("");
+					empEditInvPrice.setText("");
+					empEditInvQuantity.setText("");
 					empPage.revalidate();
 					empPage.repaint();
 				}
