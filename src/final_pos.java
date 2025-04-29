@@ -15,7 +15,7 @@ public class final_pos extends JFrame{
 	
 
 	private Connection connection;
-	private String dbUrl="jdbc:sqlite:C:/Users/Leonard/Documents/IDS401FinalPos/Inventory.db";
+	private String dbUrl="jdbc:sqlite:C:/Users/tyler/OneDrive/Desktop/UIC/IDS 401 Labs/Final project/Inventory.db";
 	public Connection getConnection() throws SQLException{
 		connection=DriverManager.getConnection(dbUrl);
 		return connection;
@@ -81,6 +81,9 @@ public class final_pos extends JFrame{
 	private JPanel empEditInvDelSubmitPanel;
 	private JPanel empEditInvDelResultsPanel;
 	private JPanel empEditInvResultPanel;
+	private JPanel applabelPanel;
+	private JPanel furnlabelPanel;
+	private JPanel eleclabelPanel;
 	
 	private JTextField userInput;
 	private JTextField passInput;
@@ -111,6 +114,122 @@ public class final_pos extends JFrame{
 	    } catch (NumberFormatException e) {
 	      return 0;  // turns all the textfields into a integer
 	    }
+	}
+	private void loadAppliances() {
+		try {
+		    String query = "SELECT Name, Price FROM Appliances";
+		    Connection c1 = getConnection();
+		    PreparedStatement ps = c1.prepareStatement(query);
+		    ResultSet rs = ps.executeQuery();
+		    while (rs.next()) {
+		        String appName = rs.getString("Name");
+		        double appPrice = rs.getDouble("Price");
+
+		        JPanel rowPanel = new JPanel();
+		        rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
+		        rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		       
+		        JLabel appNamelabel = new JLabel(appName);
+		        JLabel appPricelabel = new JLabel(String.format("%.2f",appPrice));
+		        JTextField appQfield = new JTextField();
+		        appQfield.setText("0");
+		        appQfield.setEditable(true);
+		    	appQfield.setPreferredSize(new Dimension(150, 25));
+		        appQfield.setMaximumSize(new Dimension(150, 25));
+		        appNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        appPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        
+		        quantityFields.put(appName, appQfield); //gets the info from each text field
+		       
+		        rowPanel.add(appNamelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(appPricelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(appQfield);
+		        applabelPanel.add(rowPanel);
+		        applabelPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+		    }
+		} catch (SQLException e) {
+		    System.out.println(e.getMessage());
+		}
+	}
+	
+	private void loadElectronics() {
+		try {
+		    String query = "SELECT Name, Price FROM Electronics";
+		    Connection c1 = getConnection();
+		    PreparedStatement ps = c1.prepareStatement(query);
+		    ResultSet rs = ps.executeQuery();
+		    while (rs.next()) {
+		        String elecName = rs.getString("Name");
+		        double elecPrice = rs.getDouble("Price");
+
+		        JPanel rowPanel = new JPanel();
+		        rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
+		        rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		       
+		        JLabel elecNamelabel = new JLabel(elecName);
+		        JLabel elecPricelabel = new JLabel(String.format("%.2f",elecPrice));
+		        JTextField elecQfield = new JTextField();
+		        elecQfield.setText("0");
+		        elecQfield.setEditable(true);
+		    	elecQfield.setPreferredSize(new Dimension(150, 25));
+		        elecQfield.setMaximumSize(new Dimension(150, 25));
+		        elecNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        elecPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        
+		        quantityFields.put(elecName, elecQfield); //gets the info from each text field
+		       
+		        rowPanel.add(elecNamelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(elecPricelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(elecQfield);
+		        eleclabelPanel.add(rowPanel);
+		        eleclabelPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+		    }
+		} catch (SQLException e) {
+		    System.out.println(e.getMessage());
+		}
+	}
+	
+	private void loadFurniture() {
+		try {
+		    String query = "SELECT Name, Price FROM Furniture";
+		    Connection c1 = getConnection();
+		    PreparedStatement ps = c1.prepareStatement(query);
+		    ResultSet rs = ps.executeQuery();
+		    while (rs.next()) {
+		        String furnName = rs.getString("Name");
+		        double furnPrice = rs.getDouble("Price");
+
+		        JPanel rowPanel = new JPanel();
+		        rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
+		        rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		       
+		        JLabel furnNamelabel = new JLabel(furnName);
+		        JLabel furnPricelabel = new JLabel(String.format("%.2f",furnPrice));
+		        JTextField furnQfield = new JTextField();
+		        furnQfield.setText("0");
+		        furnQfield.setEditable(true);
+		    	furnQfield.setPreferredSize(new Dimension(150, 25));
+		        furnQfield.setMaximumSize(new Dimension(150, 25));
+		        furnNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        furnPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
+		        
+		        quantityFields.put(furnName, furnQfield); //gets the info from each text field
+		       
+		        rowPanel.add(furnNamelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(furnPricelabel);
+		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+		        rowPanel.add(furnQfield);
+		        furnlabelPanel.add(rowPanel);
+		        furnlabelPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+		    }
+		} catch (SQLException e) {
+		    System.out.println(e.getMessage());
+		}
 	}
 	
 	public final_pos() {//constructor
@@ -455,7 +574,7 @@ public class final_pos extends JFrame{
 		jlabel_app.setFont(new Font("Serif",Font.PLAIN,40));
 
 		
-		JPanel applabelPanel = new JPanel();
+		applabelPanel = new JPanel();
 		applabelPanel.setLayout(new BoxLayout(applabelPanel, BoxLayout.Y_AXIS)); // Stack labels vertically
 
 		// Wrapper to vertically center applabelPanel
@@ -465,42 +584,7 @@ public class final_pos extends JFrame{
 		centerWrapper.add(applabelPanel);                   // your label panel
 		centerWrapper.add(Box.createVerticalGlue());        // pushes content up
 		
-		try {
-		    String query = "SELECT Name, Price FROM Appliances";
-		    Connection c1 = getConnection();
-		    PreparedStatement ps = c1.prepareStatement(query);
-		    ResultSet rs = ps.executeQuery();
-		    while (rs.next()) {
-		        String appName = rs.getString("Name");
-		        double appPrice = rs.getDouble("Price");
-
-		        JPanel rowPanel = new JPanel();
-		        rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
-		        rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		       
-		        JLabel appNamelabel = new JLabel(appName);
-		        JLabel appPricelabel = new JLabel(String.format("%.2f",appPrice));
-		        JTextField appQfield = new JTextField();
-		        appQfield.setText("0");
-		        appQfield.setEditable(true);
-		    	appQfield.setPreferredSize(new Dimension(150, 25));
-		        appQfield.setMaximumSize(new Dimension(150, 25));
-		        appNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
-		        appPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
-		        
-		        quantityFields.put(appName, appQfield); //gets the info from each text field
-		       
-		        rowPanel.add(appNamelabel);
-		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
-		        rowPanel.add(appPricelabel);
-		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
-		        rowPanel.add(appQfield);
-		        applabelPanel.add(rowPanel);
-		        applabelPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-		    }
-		} catch (SQLException e) {
-		    System.out.println(e.getMessage());
-		}
+		loadAppliances();//load appliances
 		
 		//Submit button to confirm quantity
 		JPanel appSubmitRow = new JPanel();
@@ -547,7 +631,7 @@ public class final_pos extends JFrame{
 		elecPage.add(jlabel_elec, BorderLayout.NORTH);//label is added to the app and placed at the top
 		jlabel_elec.setFont(new Font("Serif",Font.PLAIN,50));
 		
-		JPanel eleclabelPanel = new JPanel();
+		eleclabelPanel = new JPanel();
 		eleclabelPanel.setLayout(new BoxLayout(eleclabelPanel, BoxLayout.Y_AXIS)); // Stack labels vertically
 		
 		// Wrapper to vertically center applabelPanel
@@ -557,42 +641,7 @@ public class final_pos extends JFrame{
 		centerWrapper2.add(eleclabelPanel);                   // your label panel
 		centerWrapper2.add(Box.createVerticalGlue());        // pushes content up
 		
-		try {
-		    String query = "SELECT Name, Price FROM Electronics";
-		    Connection c1 = getConnection();
-		    PreparedStatement ps = c1.prepareStatement(query);
-		    ResultSet rs = ps.executeQuery();
-		    while (rs.next()) {
-		        String elecName = rs.getString("Name");
-		        double elecPrice = rs.getDouble("Price");
-
-		        JPanel rowPanel = new JPanel();
-		        rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
-		        rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		       
-		        JLabel elecNamelabel = new JLabel(elecName);
-		        JLabel elecPricelabel = new JLabel(String.format("%.2f",elecPrice));
-		        JTextField elecQfield = new JTextField();
-		        elecQfield.setText("0");
-		        elecQfield.setEditable(true);
-		    	elecQfield.setPreferredSize(new Dimension(150, 25));
-		        elecQfield.setMaximumSize(new Dimension(150, 25));
-		        elecNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
-		        elecPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
-		        
-		        quantityFields.put(elecName, elecQfield); //gets the info from each text field
-		       
-		        rowPanel.add(elecNamelabel);
-		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
-		        rowPanel.add(elecPricelabel);
-		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
-		        rowPanel.add(elecQfield);
-		        eleclabelPanel.add(rowPanel);
-		        eleclabelPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-		    }
-		} catch (SQLException e) {
-		    System.out.println(e.getMessage());
-		}
+	loadElectronics();
 		
 		//Submit button to confirm quantity
 		JPanel elecSubmitRow = new JPanel();
@@ -635,7 +684,7 @@ public class final_pos extends JFrame{
 		jlabel_furn.setFont(new Font("Serif",Font.PLAIN,40));
 
 		
-		JPanel furnlabelPanel = new JPanel();
+		furnlabelPanel = new JPanel();
 		furnlabelPanel.setLayout(new BoxLayout(furnlabelPanel, BoxLayout.Y_AXIS)); // Stack labels vertically
 
 		// Wrapper to vertically center applabelPanel
@@ -645,42 +694,7 @@ public class final_pos extends JFrame{
 		centerWrapper3.add(furnlabelPanel);                   // your label panel
 		centerWrapper3.add(Box.createVerticalGlue());        // pushes content up
 		
-		try {
-		    String query = "SELECT Name, Price FROM Furniture";
-		    Connection c1 = getConnection();
-		    PreparedStatement ps = c1.prepareStatement(query);
-		    ResultSet rs = ps.executeQuery();
-		    while (rs.next()) {
-		        String furnName = rs.getString("Name");
-		        double furnPrice = rs.getDouble("Price");
-
-		        JPanel rowPanel = new JPanel();
-		        rowPanel.setLayout(new BoxLayout(rowPanel, BoxLayout.X_AXIS));
-		        rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		       
-		        JLabel furnNamelabel = new JLabel(furnName);
-		        JLabel furnPricelabel = new JLabel(String.format("%.2f",furnPrice));
-		        JTextField furnQfield = new JTextField();
-		        furnQfield.setText("0");
-		        furnQfield.setEditable(true);
-		    	furnQfield.setPreferredSize(new Dimension(150, 25));
-		        furnQfield.setMaximumSize(new Dimension(150, 25));
-		        furnNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
-		        furnPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
-		        
-		        quantityFields.put(furnName, furnQfield); //gets the info from each text field
-		       
-		        rowPanel.add(furnNamelabel);
-		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
-		        rowPanel.add(furnPricelabel);
-		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
-		        rowPanel.add(furnQfield);
-		        furnlabelPanel.add(rowPanel);
-		        furnlabelPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-		    }
-		} catch (SQLException e) {
-		    System.out.println(e.getMessage());
-		}
+		loadFurniture();
 		
 		//Submit button to confirm quantity
 		JPanel furnSubmitRow = new JPanel();
@@ -814,6 +828,7 @@ public class final_pos extends JFrame{
 		int addQuantity1;
 		double addPrice1;
 		String Query = "";
+		String checkName = "";
 		try {
 			Connection connection = DriverManager.getConnection(dbUrl);
 			addCategory = (String) empEditInvBox1.getSelectedItem();
@@ -822,7 +837,22 @@ public class final_pos extends JFrame{
 			addQuantity = (String) empEditInvQuantity.getText();
 			addPrice1 = Double.parseDouble(addPrice);
 			addQuantity1 = Integer.parseInt(addQuantity);
+			
 			Query = "INSERT INTO " + addCategory + "(Name, Price, Quantity) VALUES (?, ?, ?)";
+			checkName = "SELECT COUNT(*) FROM " + addCategory + " WHERE Name = ?";
+			
+			//checks if an item of the same name exists already
+			PreparedStatement check = connection.prepareStatement(checkName);
+			check.setString(1, addName);
+			ResultSet rs = check.executeQuery();
+	        if (rs.next() && rs.getInt(1) > 0) {
+	            empEditInvResult.setText("Item already exists");
+	            return; //exit current method if item already exists
+	        }
+	        rs.close();
+	        check.close();
+			
+			//adds new item based of user answers
 			PreparedStatement stmt = connection.prepareStatement(Query);
 			stmt.setString(1, addName);
 			stmt.setDouble(2, addPrice1);
@@ -998,6 +1028,8 @@ public class final_pos extends JFrame{
 					setContentPane(empPage);
 					empPage.revalidate();
 					empPage.repaint();
+
+					
 				}
 			}
 		}
@@ -1031,6 +1063,18 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empEditInvDelSubmit) {
 					empDeleteInv();
+					//Resets and reloads the category pages, so added/deleted items will show
+					applabelPanel.removeAll(); 
+					eleclabelPanel.removeAll();
+					furnlabelPanel.removeAll();
+					quantityFields.clear();
+					loadAppliances();
+					loadFurniture();
+					loadElectronics();
+			        appCartBtn.setText("Cart: 0");
+			        elecCartBtn.setText("Cart: 0" );
+			        furnCartBtn.setText("Cart: 0");
+			        shopCartBtn.setText("Cart: 0");
 				}
 			}
 		}
@@ -1038,6 +1082,18 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empEditInvAddBtnSubmit) {
 					empAddInv();
+					//Resets and reloads the category pages, so added/deleted items will show
+					applabelPanel.removeAll(); 
+					eleclabelPanel.removeAll();
+					furnlabelPanel.removeAll();
+					quantityFields.clear();
+					loadAppliances();
+					loadFurniture();
+					loadElectronics();
+			        appCartBtn.setText("Cart: 0");
+			        elecCartBtn.setText("Cart: 0" );
+			        furnCartBtn.setText("Cart: 0");
+			        shopCartBtn.setText("Cart: 0");
 				}
 			}
 		}
