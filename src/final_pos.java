@@ -104,6 +104,7 @@ public class final_pos extends JFrame{
 	Font font2 = new Font("Seriff", Font.BOLD, 30);
 	
 	private Map<String, JTextField> quantityFields = new HashMap<>();
+	private Map<String,String> itemTableMap = new HashMap<>();
 	
 	private String[] empInvChoice = {" ", "Appliances", "Furniture", "Electronics"};
 	
@@ -140,6 +141,7 @@ public class final_pos extends JFrame{
 		        appPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
 		        
 		        quantityFields.put(appName, appQfield); //gets the info from each text field
+		        itemTableMap.put(appName, "Appliances");
 		       
 		        rowPanel.add(appNamelabel);
 		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
@@ -179,6 +181,7 @@ public class final_pos extends JFrame{
 		        elecPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
 		        
 		        quantityFields.put(elecName, elecQfield); //gets the info from each text field
+		        itemTableMap.put(elecName, "Electronics");
 		       
 		        rowPanel.add(elecNamelabel);
 		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
@@ -218,6 +221,7 @@ public class final_pos extends JFrame{
 		        furnPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
 		        
 		        quantityFields.put(furnName, furnQfield); //gets the info from each text field
+		        itemTableMap.put(furnName, "Furniture");
 		       
 		        rowPanel.add(furnNamelabel);
 		        rowPanel.add(Box.createRigidArea(new Dimension(50, 0)));
@@ -230,6 +234,18 @@ public class final_pos extends JFrame{
 		} catch (SQLException e) {
 		    System.out.println(e.getMessage());
 		}
+	}
+	private void calculateCart() {
+		  int total = 0;
+		  for (JTextField field : quantityFields.values()) {
+		    total += parseQty(field);
+		  }
+
+		  cartNum = total;   
+		        appCartBtn.setText("Cart: " + cartNum);
+		        elecCartBtn.setText("Cart: " + cartNum);
+		        furnCartBtn.setText("Cart: " + cartNum);
+		        shopCartBtn.setText("Cart: " + cartNum);
 	}
 	
 	public final_pos() {//constructor
@@ -981,16 +997,45 @@ public class final_pos extends JFrame{
 		class cartUpdate implements ActionListener{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == appSubmitBtn||evt.getSource() == elecSubmitBtn||evt.getSource() == furnSubmitBtn) {
-					  int total = 0;
-					  for (JTextField field : quantityFields.values()) {
-					    total += parseQty(field);
-					  }
-
-					  cartNum = total;   
-					        appCartBtn.setText("Cart: " + cartNum);
-					        elecCartBtn.setText("Cart: " + cartNum);
-					        furnCartBtn.setText("Cart: " + cartNum);
-					        shopCartBtn.setText("Cart: " + cartNum);
+		            //check stock availability for each item before updating the cart
+		            for (Map.Entry<String, JTextField> e : quantityFields.entrySet()) {
+		                String item    = e.getKey();                  // the product name
+		                int desired    = parseQty(e.getValue());      // how many the user entered
+		                String table   = itemTableMap.get(item);      // which DB table it belongs to
+		                String sql     = "SELECT Quantity FROM " 
+		                                 + table + " WHERE Name = ?";
+		                try (PreparedStatement ps = connection.prepareStatement(sql)) {
+		                    ps.setString(1, item);                   // bind the product name
+		                    try (ResultSet rs = ps.executeQuery()) {
+		                        int available = rs.next() 
+		                            ? rs.getInt("Quantity") 
+		                            : 0;                            // get stock or 0 if no row
+		                        if (desired > available) {           // if user wants more than stock
+		                            JOptionPane.showMessageDialog(
+		                                final_pos.this,
+		                                "Sorry, only " + available 
+		                                + " of \"" + item + "\" available.",
+		                                "Out of Stock",
+		                                JOptionPane.ERROR_MESSAGE
+		                            );
+		                            e.getValue().setText("0");		//sets the quantity wanted to 0 if they want more than stock
+		                            calculateCart();
+		                            return;                           // abort the listener
+		                        }
+		                    }
+		                } catch (SQLException ex) {
+		                    ex.printStackTrace();
+		                    JOptionPane.showMessageDialog(
+		                        final_pos.this,
+		                        "DB error checking stock for " + item 
+		                        + ": " + ex.getMessage(),
+		                        "DB Error",
+		                        JOptionPane.ERROR_MESSAGE
+		                    );
+		                    return;                                   // abort on DB error
+		                }
+		            }
+		            	calculateCart();
 
 					    
 				}
