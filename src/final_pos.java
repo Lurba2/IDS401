@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class final_pos extends JFrame{
+public class final_pos2 extends JFrame{
 	
 
 	private Connection connection;
-	private String dbUrl="jdbc:sqlite:C:/Users/Leonard/Documents/IDS401FinalPos/Inventory.db";
+	private String dbUrl="jdbc:sqlite:C:/Users/tyler/OneDrive/Desktop/UIC/IDS 401 Labs/Final project/Inventory.db";
 	public Connection getConnection() throws SQLException{
 		connection=DriverManager.getConnection(dbUrl);
 		return connection;
@@ -136,6 +136,19 @@ public class final_pos extends JFrame{
 	    } catch (NumberFormatException e) {
 	      return 0;  // turns all the textfields into a integer
 	    }
+	}
+	private void reset() {
+		applabelPanel.removeAll(); 
+		eleclabelPanel.removeAll();
+		furnlabelPanel.removeAll();
+		quantityFields.clear();
+		loadAppliances();
+		loadFurniture();
+		loadElectronics();
+        appCartBtn.setText("Cart: 0");
+        elecCartBtn.setText("Cart: 0" );
+        furnCartBtn.setText("Cart: 0");
+        shopCartBtn.setText("Cart: 0");
 	}
 	private void loadAppliances() {
 		try {
@@ -269,7 +282,7 @@ public class final_pos extends JFrame{
 		        shopCartBtn.setText("Cart: " + cartNum);
 	}
 	
-	public final_pos() {//constructor
+	public final_pos2() {//constructor
 		setPreferredSize(new Dimension(750,750));;//set size to 800x800
 		setMaximumSize(new Dimension(750,750));
 		setMinimumSize(new Dimension(750,750));
@@ -855,7 +868,7 @@ public class final_pos extends JFrame{
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		final_pos connect1 = new final_pos();
+		final_pos2 connect1 = new final_pos2();
 		try {
 			connect1.getConnection();//should be defined in the JAR file
 			System.out.println("Connection to SQLite has been established.");
@@ -1146,7 +1159,7 @@ public class final_pos extends JFrame{
 		                            : 0;                            // get stock or 0 if no row
 		                        if (desired > available) {           // if user wants more than stock
 		                            JOptionPane.showMessageDialog(
-		                                final_pos.this,
+		                                final_pos2.this,
 		                                "Sorry, only " + available 
 		                                + " of \"" + item + "\" available.",
 		                                "Out of Stock",
@@ -1160,7 +1173,7 @@ public class final_pos extends JFrame{
 		                } catch (SQLException ex) {
 		                    ex.printStackTrace();
 		                    JOptionPane.showMessageDialog(
-		                        final_pos.this,
+		                        final_pos2.this,
 		                        "DB error checking stock for " + item 
 		                        + ": " + ex.getMessage(),
 		                        "DB Error",
@@ -1247,18 +1260,7 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empEditInvDelSubmit) {
 					empDeleteInv();
-					//Resets and reloads the category pages, so added/deleted items will show
-					applabelPanel.removeAll(); 
-					eleclabelPanel.removeAll();
-					furnlabelPanel.removeAll();
-					quantityFields.clear();
-					loadAppliances();
-					loadFurniture();
-					loadElectronics();
-			        appCartBtn.setText("Cart: 0");
-			        elecCartBtn.setText("Cart: 0" );
-			        furnCartBtn.setText("Cart: 0");
-			        shopCartBtn.setText("Cart: 0");
+					reset();
 				}
 			}
 		}
@@ -1266,18 +1268,7 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empEditInvAddBtnSubmit) {
 					empAddInv();
-					//Resets and reloads the category pages, so added/deleted items will show
-					applabelPanel.removeAll(); 
-					eleclabelPanel.removeAll();
-					furnlabelPanel.removeAll();
-					quantityFields.clear();
-					loadAppliances();
-					loadFurniture();
-					loadElectronics();
-			        appCartBtn.setText("Cart: 0");
-			        elecCartBtn.setText("Cart: 0" );
-			        furnCartBtn.setText("Cart: 0");
-			        shopCartBtn.setText("Cart: 0");
+					reset();
 				}
 			}
 		}
@@ -1323,6 +1314,7 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empChangePriceSubmitBtn) {
 					empChangePrice();
+					reset();
 				}
 			}
 		}
