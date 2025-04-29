@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class final_pos2 extends JFrame{
+public class final_pos extends JFrame{
 	
 
 	private Connection connection;
@@ -282,7 +282,7 @@ public class final_pos2 extends JFrame{
 		        shopCartBtn.setText("Cart: " + cartNum);
 	}
 	
-	public final_pos2() {//constructor
+	public final_pos() {//constructor
 		setPreferredSize(new Dimension(750,750));;//set size to 800x800
 		setMaximumSize(new Dimension(750,750));
 		setMinimumSize(new Dimension(750,750));
@@ -868,7 +868,7 @@ public class final_pos2 extends JFrame{
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		final_pos2 connect1 = new final_pos2();
+		final_pos connect1 = new final_pos();
 		try {
 			connect1.getConnection();//should be defined in the JAR file
 			System.out.println("Connection to SQLite has been established.");
@@ -1159,7 +1159,7 @@ public class final_pos2 extends JFrame{
 		                            : 0;                            // get stock or 0 if no row
 		                        if (desired > available) {           // if user wants more than stock
 		                            JOptionPane.showMessageDialog(
-		                                final_pos2.this,
+		                                final_pos.this,
 		                                "Sorry, only " + available 
 		                                + " of \"" + item + "\" available.",
 		                                "Out of Stock",
@@ -1173,7 +1173,7 @@ public class final_pos2 extends JFrame{
 		                } catch (SQLException ex) {
 		                    ex.printStackTrace();
 		                    JOptionPane.showMessageDialog(
-		                        final_pos2.this,
+		                        final_pos.this,
 		                        "DB error checking stock for " + item 
 		                        + ": " + ex.getMessage(),
 		                        "DB Error",
