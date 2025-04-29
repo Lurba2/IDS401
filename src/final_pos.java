@@ -52,6 +52,7 @@ public class final_pos extends JFrame{
 	private JButton empChangePriceBtn;
 	private JButton empChangePriceQuantityBackBtn;
 	private JButton empChangeInvPrice;
+	private JButton empChangePriceSubmitBtn;
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -95,6 +96,7 @@ public class final_pos extends JFrame{
 	private JPanel empChangePriceNamePanel;
 	private JPanel empChangePriceNewPricePanel;
 	private JPanel empChangeQuantityPanel;
+	private JPanel empChangePriceSubmitPanel;
 
 	
 	private JTextField userInput;
@@ -117,6 +119,7 @@ public class final_pos extends JFrame{
 	private JLabel empEditInvDelResults;
 	private JLabel empEditInvResult;
 	private JLabel empSelectPriceQuantity;
+	private JLabel empChangePriceSubmitResponse;
 	
 	Font font2 = new Font("Seriff", Font.BOLD, 30);
 	
@@ -486,6 +489,7 @@ public class final_pos extends JFrame{
 		changePriceFrom.setFont(font2);
 		empChangePriceBox = new JComboBox<>(); // box that recieves string array.
 		empChangePriceBox.setFont(font2);
+		empChangePriceBox.setPreferredSize(new Dimension(250, 50));
 		empChangePriceCategory = new JComboBox<>(empInvChoice);
 		
 		empChangePriceNamesListener e1 = new empChangePriceNamesListener();
@@ -503,12 +507,21 @@ public class final_pos extends JFrame{
 		empChangePriceNewPricePanel = new JPanel();
 		JLabel newPriceLabel = new JLabel("New price:");
 		newPriceLabel.setFont(font2);
-		newPriceText = new JTextField(10);
+		newPriceText = new JTextField(10); 
 		newPriceText.setFont(font2);
 		empChangePriceNewPricePanel.add(newPriceLabel);
 		empChangePriceNewPricePanel.add(newPriceText);
 		empChangePricePanel.add(empChangePriceNewPricePanel);
 		
+		empChangePriceSubmitBtn = new JButton("Submit");
+		empChangePriceSubmit e11 = new empChangePriceSubmit();
+		empChangePriceSubmitBtn.addActionListener(e11);
+		empChangePriceSubmitBtn.setFont(font2);
+		empChangePriceSubmitPanel = new JPanel();
+		empChangePriceSubmitResponse = new JLabel();
+		empChangePriceSubmitPanel.add(empChangePriceSubmitBtn);
+		empChangePriceSubmitPanel.add(empChangePriceSubmitResponse);
+		empChangePricePanel.add(empChangePriceSubmitPanel);
 		//employee add/subtract inventory
 		addSubtractInv addSubInv = new addSubtractInv();
 		empManipulateInv.addActionListener(addSubInv);
@@ -892,6 +905,31 @@ public class final_pos extends JFrame{
 			System.out.println(e.getMessage() +empViewInvCall );
 		}
 	}
+	public void empChangePrice() throws Error{
+		String name = (String)empChangePriceBox.getSelectedItem();
+		String table = (String)empChangePriceCategory.getSelectedItem();
+		double price = Double.parseDouble(newPriceText.getText());
+		String Query = "UPDATE " + table + " SET Price =" + price + " WHERE Name = " + "'" + name + "'";
+		try  {
+			Connection connection = DriverManager.getConnection(dbUrl);
+			PreparedStatement stmt = connection.prepareStatement(Query);
+			System.out.println("Query: " + Query);
+			int rs = stmt.executeUpdate();
+			 System.out.println("Rows updated: " + rs);
+
+		        if (rs > 0) {
+		            empChangePriceSubmitResponse.setText("Update successful");
+		        } else {
+		            empChangePriceSubmitResponse.setText("No match found for name: " + name);
+		        }
+			stmt.close();
+	        connection.close();
+	        revalidate();
+	        repaint();
+		} catch(SQLException e) {
+			System.out.println(e.getMessage()+"Here");
+		}
+	}
 	public void empDeleteInv() throws Error{
 		String deleteName = "";
 		String deleteTable = "";
@@ -931,15 +969,16 @@ public class final_pos extends JFrame{
 	        rs = stmt.executeQuery();
 	        nameList[0] = " ";
 			for(int i = 1; i<nameCount+1; i++) {
-				nameList[i] = rs.getString("Name");
 				rs.next();
+				nameList[i] = rs.getString("Name");
 			}
-			
 			empChangePriceBox.removeAllItems();
 			for(int i=0; i<nameCount+1; i++) {
 				empChangePriceBox.addItem(nameList[i]);
 			}
-			
+			rs.close();
+			stmt.close();
+			connection.close();
 		} catch(SQLException e) {
 			System.out.println(e.getMessage() + Query);
 		}
@@ -1261,13 +1300,14 @@ public class final_pos extends JFrame{
 					int selectedIndex = empChangePriceQuantity.getSelectedIndex();
 					System.out.print(selectedIndex);
 					if(selectedIndex == 1) {
+						//remove quantity panel.
 						empChangePriceQuantityPanel.add(empChangePricePanel, BorderLayout.CENTER);
 						revalidate();
 						repaint();
 						
 						//empChangePriceQuantityPanel.remove();
 					} else if(selectedIndex == 2) {
-						
+						//need to add quantity panel and remove price panel.
 					}
 				}
 			}
@@ -1276,6 +1316,13 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empChangePriceCategory) {
 					empChangePriceCall();
+				}
+			}
+		}
+		class empChangePriceSubmit implements ActionListener {
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empChangePriceSubmitBtn) {
+					empChangePrice();
 				}
 			}
 		}
