@@ -94,6 +94,7 @@ public class final_pos extends JFrame{
 	private JPanel empChangePriceFromPanel;
 	private JPanel empChangePriceNamePanel;
 	private JPanel empChangePriceNewPricePanel;
+	private JPanel empChangeQuantityPanel;
 
 	
 	private JTextField userInput;
@@ -463,9 +464,15 @@ public class final_pos extends JFrame{
 		empChangePriceQuantityBackBtnPanel.add(empChangePriceQuantityBackBtn, BorderLayout.SOUTH);
 		empChangePriceQuantityPanel.add(empChangePriceQuantityBackBtnPanel, BorderLayout.SOUTH);
 		
+		empChangeQuantityPanel = new JPanel();
+		
+		
 		empChangePriceQuantitySelection = new JPanel();
 		empSelectPriceQuantity = new JLabel("Change price or quantity:");
+		empSelectPriceQuantity.setFont(font2);
 		empChangePriceQuantity = new JComboBox<>(empChangePriceQuantityChoice);
+		//- action listener
+		empChangePriceQuantity.setFont(font2);
 		selectPriceQuantity sq1 = new selectPriceQuantity();
 		empChangePriceQuantity.addActionListener(sq1);
 		empChangePriceQuantitySelection.add(empSelectPriceQuantity);
@@ -474,9 +481,16 @@ public class final_pos extends JFrame{
 		
 		empChangePricePanel = new JPanel();
 		JLabel changePrice = new JLabel("Change price from table:");
+		changePrice.setFont(font2);
 		JLabel changePriceFrom = new JLabel("with the name of:");
-		empChangePriceBox = new JComboBox<>(); // box that will take the string array of named returned.
+		changePriceFrom.setFont(font2);
+		empChangePriceBox = new JComboBox<>(); // box that recieves string array.
+		empChangePriceBox.setFont(font2);
 		empChangePriceCategory = new JComboBox<>(empInvChoice);
+		
+		empChangePriceNamesListener e1 = new empChangePriceNamesListener();
+		empChangePriceCategory.addActionListener(e1);
+		empChangePriceCategory.setFont(font2);
 		empChangePriceFromPanel = new JPanel();
 		empChangePriceFromPanel.add(changePrice);
 		empChangePriceFromPanel.add(empChangePriceCategory);
@@ -488,9 +502,12 @@ public class final_pos extends JFrame{
 		
 		empChangePriceNewPricePanel = new JPanel();
 		JLabel newPriceLabel = new JLabel("New price:");
+		newPriceLabel.setFont(font2);
 		newPriceText = new JTextField(10);
+		newPriceText.setFont(font2);
 		empChangePriceNewPricePanel.add(newPriceLabel);
 		empChangePriceNewPricePanel.add(newPriceText);
+		empChangePricePanel.add(empChangePriceNewPricePanel);
 		
 		//employee add/subtract inventory
 		addSubtractInv addSubInv = new addSubtractInv();
@@ -895,6 +912,7 @@ public class final_pos extends JFrame{
 			System.out.println(e.getMessage() + deleteStatement);
 		}
 	}
+	
 	public void empChangePriceCall() throws Error{
 		String category = empChangePriceCategory.getSelectedItem().toString();
 		String Query = "SELECT Name FROM " + "'" + category + "'";
@@ -907,22 +925,23 @@ public class final_pos extends JFrame{
 			while (rs.next()) {
 				nameCount++;
 			}
-			nameList = new String[nameCount];
+			nameList = new String[nameCount +1];
 			
 			stmt = connection.prepareStatement(Query);
 	        rs = stmt.executeQuery();
-	        
-			for(int i = 0; i<nameCount; i++) {
+	        nameList[0] = " ";
+			for(int i = 1; i<nameCount+1; i++) {
 				nameList[i] = rs.getString("Name");
+				rs.next();
 			}
 			
 			empChangePriceBox.removeAllItems();
-			for(int i=0; i<nameCount; i++) {
+			for(int i=0; i<nameCount+1; i++) {
 				empChangePriceBox.addItem(nameList[i]);
 			}
 			
 		} catch(SQLException e) {
-			System.out.println(e.getMessage() + "879");
+			System.out.println(e.getMessage() + Query);
 		}
 	}
 	public void empAddInv() throws Error{
@@ -1240,9 +1259,23 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empChangePriceQuantity) {
 					int selectedIndex = empChangePriceQuantity.getSelectedIndex();
+					System.out.print(selectedIndex);
 					if(selectedIndex == 1) {
-						//price panel add
+						empChangePriceQuantityPanel.add(empChangePricePanel, BorderLayout.CENTER);
+						revalidate();
+						repaint();
+						
+						//empChangePriceQuantityPanel.remove();
+					} else if(selectedIndex == 2) {
+						
 					}
+				}
+			}
+		}
+		class empChangePriceNamesListener implements ActionListener {
+			public void actionPerformed(ActionEvent evt) {
+				if(evt.getSource() == empChangePriceCategory) {
+					empChangePriceCall();
 				}
 			}
 		}
