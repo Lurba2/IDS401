@@ -15,7 +15,7 @@ public class final_pos extends JFrame{
 	
 
 	private Connection connection;
-	private String dbUrl="jdbc:sqlite:C:/Users/Leonard/Documents/IDS401FinalPos/Inventory.db";
+	private String dbUrl="jdbc:sqlite:C:/Users/tyler/OneDrive/Desktop/UIC/IDS 401 Labs/Final project/Inventory.db";
 	public Connection getConnection() throws SQLException{
 		connection=DriverManager.getConnection(dbUrl);
 		return connection;
@@ -145,6 +145,19 @@ public class final_pos extends JFrame{
 	    } catch (NumberFormatException e) {
 	      return 0;  // turns all the textfields into a integer
 	    }
+	}
+	private void reset() {
+		applabelPanel.removeAll(); 
+		eleclabelPanel.removeAll();
+		furnlabelPanel.removeAll();
+		quantityFields.clear();
+		loadAppliances();
+		loadFurniture();
+		loadElectronics();
+        appCartBtn.setText("Cart: 0");
+        elecCartBtn.setText("Cart: 0" );
+        furnCartBtn.setText("Cart: 0");
+        shopCartBtn.setText("Cart: 0");
 	}
 	private void loadAppliances() {
 		try {
@@ -1352,18 +1365,7 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empEditInvDelSubmit) {
 					empDeleteInv();
-					//Resets and reloads the category pages, so added/deleted items will show
-					applabelPanel.removeAll(); 
-					eleclabelPanel.removeAll();
-					furnlabelPanel.removeAll();
-					quantityFields.clear();
-					loadAppliances();
-					loadFurniture();
-					loadElectronics();
-			        appCartBtn.setText("Cart: 0");
-			        elecCartBtn.setText("Cart: 0" );
-			        furnCartBtn.setText("Cart: 0");
-			        shopCartBtn.setText("Cart: 0");
+					reset();
 				}
 			}
 		}
@@ -1371,18 +1373,7 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empEditInvAddBtnSubmit) {
 					empAddInv();
-					//Resets and reloads the category pages, so added/deleted items will show
-					applabelPanel.removeAll(); 
-					eleclabelPanel.removeAll();
-					furnlabelPanel.removeAll();
-					quantityFields.clear();
-					loadAppliances();
-					loadFurniture();
-					loadElectronics();
-			        appCartBtn.setText("Cart: 0");
-			        elecCartBtn.setText("Cart: 0" );
-			        furnCartBtn.setText("Cart: 0");
-			        shopCartBtn.setText("Cart: 0");
+					reset();
 				}
 			}
 		}
@@ -1460,6 +1451,7 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == empChangePriceSubmitBtn) {
 					empChangePrice();
+					reset();
 				}
 			}
 		}
