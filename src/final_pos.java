@@ -15,7 +15,7 @@ public class final_pos extends JFrame{
 	
 
 	private Connection connection;
-	private String dbUrl="jdbc:sqlite:C:/Users/tyler/OneDrive/Desktop/UIC/IDS 401 Labs/Final project/Inventory.db";
+	private String dbUrl="jdbc:sqlite:C:/Users/Leonard/Documents/IDS401FinalPos/Inventory.db";
 	public Connection getConnection() throws SQLException{
 		connection=DriverManager.getConnection(dbUrl);
 		return connection;
@@ -461,12 +461,12 @@ public class final_pos extends JFrame{
 		empChangeInvPrice.setFont(font1);
 		changePriceQuantity c2 = new changePriceQuantity();
 		empChangeInvPrice.addActionListener(c2);
-		
-		empBtmPanel = new JPanel();
+	
 		empManipulation.add(empManipulateInv, BorderLayout.CENTER);
 		empManipulation.add(empViewInv, BorderLayout.CENTER);
 		empManipulation.add(empChangeInvPrice, BorderLayout.CENTER);
 		empPage.add(new JLabel("Employee Home"), BorderLayout.NORTH);
+		empBtmPanel = new JPanel();
 		empBtmPanel.setLayout(new BoxLayout(empBtmPanel, BoxLayout.X_AXIS));
 		empPage.add(empManipulation, BorderLayout.CENTER);
 		empBackBtn = new JButton("Back");
@@ -589,6 +589,7 @@ public class final_pos extends JFrame{
 		empChangePriceSubmitPanel.add(empChangePriceSubmitBtn);
 		empChangePriceSubmitPanel.add(empChangePriceSubmitResponse);
 		empChangePricePanel.add(empChangePriceSubmitPanel);
+		
 		//employee add/subtract inventory
 		addSubtractInv addSubInv = new addSubtractInv();
 		empManipulateInv.addActionListener(addSubInv);
@@ -994,7 +995,7 @@ public class final_pos extends JFrame{
 	        revalidate();
 	        repaint();
 		} catch(SQLException e) {
-			System.out.println(e.getMessage()+"Here");
+			System.out.println(e.getMessage());
 		}
 	}
 	public void empDeleteInv() throws Error{
@@ -1109,7 +1110,6 @@ public class final_pos extends JFrame{
 		int addQuantity1;
 		double addPrice1;
 		String Query = "";
-		String checkName = "";
 		try {
 			Connection connection = DriverManager.getConnection(dbUrl);
 			addCategory = (String) empEditInvBox1.getSelectedItem();
@@ -1119,20 +1119,7 @@ public class final_pos extends JFrame{
 			addPrice1 = Double.parseDouble(addPrice);
 			addQuantity1 = Integer.parseInt(addQuantity);
 			
-			Query = "INSERT INTO " + addCategory + "(Name, Price, Quantity) VALUES (?, ?, ?)";
-			checkName = "SELECT COUNT(*) FROM " + addCategory + " WHERE Name = ?";
-			
-			//checks if an item of the same name exists already
-			PreparedStatement check = connection.prepareStatement(checkName);
-			check.setString(1, addName);
-			ResultSet rs = check.executeQuery();
-	        if (rs.next() && rs.getInt(1) > 0) {
-	            empEditInvResult.setText("Item already exists");
-	            return; //exit current method if item already exists
-	        }
-	        rs.close();
-	        check.close();
-			
+			Query = "INSERT INTO " + addCategory + "(Name, Price, Quantity) VALUES (?, ?, ?)";	
 			//adds new item based of user answers
 			PreparedStatement stmt = connection.prepareStatement(Query);
 			stmt.setString(1, addName);
@@ -1141,7 +1128,7 @@ public class final_pos extends JFrame{
 			
 			int amountAdded = stmt.executeUpdate();
 			if(amountAdded == 0) {
-				empEditInvResult.setText("Did not work");
+				empEditInvResult.setText("Error! Try again!");
 			} else {
 				empEditInvResult.setText("Item has been added");
 			}
