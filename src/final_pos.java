@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.sql.PreparedStatement;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +16,19 @@ public class final_pos extends JFrame{
 	
 
 	private Connection connection;
-	private String dbUrl = "jdbc:sqlite:Inventory.db";
+	private String dbUrl="jdbc:sqlite:C:/Users/tyler/OneDrive/Desktop/UIC/IDS 401 Labs/Final project/Inventory.db";
+	//private String dbUrl="jdbc:sqlite:C:/Users/Leonard/Documents/IDS401FinalPos/Inventory.db";
 	public Connection getConnection() throws SQLException{
 		connection=DriverManager.getConnection(dbUrl);
 		return connection;
+	}
+	
+	private Connection connection2;
+	private String empUrl="jdbc:sqlite:C:/Users/tyler/OneDrive/Desktop/UIC/IDS 401 Labs/Final project/Employees.db";
+	//private String dbUrl="jdbc:sqlite:C:/Users/Leonard/Documents/IDS401FinalPos/Employees.db";
+	public Connection getConnection2() throws SQLException{
+		connection2=DriverManager.getConnection(empUrl);
+		return connection2;
 	}
 
 	private Container intro;
@@ -38,6 +48,7 @@ public class final_pos extends JFrame{
 	private JButton appBackBtn;
 	private JButton furnBackBtn;
 	private JButton elecBackBtn;
+	private JButton cartBackBtn;
 	private JButton empViewInv;
 	private JButton empViewInvBackBtn;
 	private JButton empEditInvAddBtn;
@@ -45,19 +56,18 @@ public class final_pos extends JFrame{
 	private JButton appSubmitBtn;
 	private JButton elecSubmitBtn;
 	private JButton furnSubmitBtn;
+	private JButton cartSubmitBtn;
 	private JButton empManipulateInv;
 	private JButton empEditInvBackBtn;
 	private JButton empEditInvAddBtnSubmit;
 	private JButton empEditInvDelSubmit;
-	private JButton empChangePriceBtn;
 	private JButton empChangePriceQuantityBackBtn;
 	private JButton empChangeInvPrice;
 	private JButton empChangePriceSubmitBtn;
 	private JButton empChangeQuantitySubmitLabel;
-	private JButton cartBackBtn;
-	private JButton cartSubmitBtn;
 	
 	private JPanel centerPanel;
+	private JPanel cartCenterPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
 	private JPanel empLog;
 	private JPanel empPage;
@@ -66,7 +76,10 @@ public class final_pos extends JFrame{
 	private JPanel empBtmPanel;
 	private JPanel appBtmPanel;
 	private JPanel furnBtmPanel;
+	private JPanel cartBtmPanel;
 	private JPanel appPage;
+	private JPanel cartPage;
+	private JPanel cartPanel;
 	private JPanel empManipulation;
 	private JPanel empViewInvPanel;
 	private JPanel empViewInvPanelSelection;
@@ -104,9 +117,7 @@ public class final_pos extends JFrame{
 	private JPanel empChangeQuantityNamePanel;
 	private JPanel empChangeQuantitySubmitPanel;
 	private JPanel empChangeQuantityResultsPanel;
-	private JPanel cartPage;
-	private JPanel cartBtmPanel;
-	private JPanel cartCenterPanel;
+
 	
 	private JTextField userInput;
 	private JTextField passInput;
@@ -136,15 +147,11 @@ public class final_pos extends JFrame{
 	private JLabel cartTitleLabel;
 	private JLabel cartCountLabel;
 	
-	private int cartNum = 0;
-	private int appItems = 0;
-	private int elecItems = 0;
-	private int furnItems = 0;
-	
 	Font font2 = new Font("Seriff", Font.BOLD, 30);
 	
-	private Map<String, JTextField> quantityFields = new HashMap<>();
+	private Map<String, JTextField> quantityFields = new HashMap<>();  //creates a map that collects all of the quantity fields added
 	private Map<String,String> itemTableMap = new HashMap<>();
+	private Map<String,Double> priceMap = new HashMap<>();
 	
 	private String[] empInvChoice = {" ", "Appliances", "Furniture", "Electronics"};
 	private String[] empChangePriceQuantityChoice = {" ", "Price", "Quantity"};
@@ -157,7 +164,7 @@ public class final_pos extends JFrame{
 	      return 0;  // turns all the textfields into a integer
 	    }
 	}
-	private void reset() {
+	private void reset() {		//resets all of the quantity fields and carts
 		applabelPanel.removeAll(); 
 		eleclabelPanel.removeAll();
 		furnlabelPanel.removeAll();
@@ -169,6 +176,47 @@ public class final_pos extends JFrame{
         elecCartBtn.setText("Cart: 0" );
         furnCartBtn.setText("Cart: 0");
         shopCartBtn.setText("Cart: 0");
+	}
+
+	private void updateCartDisplay() {
+	    cartCenterPanel.removeAll();	//clear the panel
+
+	    // build a table
+	    String[] cols = { "Item", "Unit Price", "Qty", "Total" };
+	    DefaultTableModel model = new DefaultTableModel(cols, 0);
+	    double grandTotal = 0.0;
+
+	    for (Map.Entry<String, JTextField> e : quantityFields.entrySet()) {	//loops thru each quantity field
+	        String item = e.getKey();	//gets the item name
+	        int qty = parseQty(e.getValue());		//gets the quantity user inputted
+	        if (qty > 0 && priceMap.containsKey(item)) {	//if the user put in a number (if not 0)
+	            double price = priceMap.get(item);			//gets the price of that specific item from priceMap
+	            double subtotal = price * qty;
+	            model.addRow(new Object[]{ item, price, qty, subtotal });	//adds row to default table "model"
+	            grandTotal += subtotal;			
+	        }
+	    }
+
+	    // 3) create the JTable and wrap it
+	    JTable table = new JTable(model);	//creates proper table with model
+	    table.setFillsViewportHeight(true);		//full table is always shown
+	    JScrollPane scrollPane = new JScrollPane(table);
+	    scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    cartCenterPanel.add(scrollPane);
+
+
+	    cartCenterPanel.add(Box.createRigidArea(new Dimension(0,10)));
+	    JLabel totalLbl = new JLabel(
+	        String.format("Total: $%.2f", grandTotal),
+	        SwingConstants.CENTER
+	    );
+	    totalLbl.setFont(new Font("Serif", Font.BOLD, 24));
+	    totalLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    cartCenterPanel.add(totalLbl);
+
+	    // revalidate
+	    cartCenterPanel.revalidate();
+	    cartCenterPanel.repaint();
 	}
 	private void loadAppliances() {
 		try {
@@ -194,6 +242,7 @@ public class final_pos extends JFrame{
 		        appNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
 		        appPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
 		        
+	            priceMap.put(appName, appPrice);
 		        quantityFields.put(appName, appQfield); //gets the info from each text field
 		        itemTableMap.put(appName, "Appliances");
 		       
@@ -234,6 +283,7 @@ public class final_pos extends JFrame{
 		        elecNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
 		        elecPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
 		        
+	            priceMap.put(elecName, elecPrice);
 		        quantityFields.put(elecName, elecQfield); //gets the info from each text field
 		        itemTableMap.put(elecName, "Electronics");
 		       
@@ -274,6 +324,7 @@ public class final_pos extends JFrame{
 		        furnNamelabel.setFont(new Font("Arial", Font.PLAIN, 30));
 		        furnPricelabel.setFont(new Font("Arial", Font.PLAIN, 30));
 		        
+	            priceMap.put(furnName, furnPrice);
 		        quantityFields.put(furnName, furnQfield); //gets the info from each text field
 		        itemTableMap.put(furnName, "Furniture");
 		       
@@ -490,7 +541,6 @@ public class final_pos extends JFrame{
 		//employee change price/quantity.
 		empChangePriceQuantityPanel = new JPanel();//main change price / quantity panel
 		empChangePriceQuantityPanel.setLayout(new BorderLayout());
-		empChangePriceBtn = new JButton();
 		empChangePriceQuantityBackBtnPanel = new JPanel();
 		empChangePriceQuantityBackBtnPanel.setLayout(new BoxLayout(empChangePriceQuantityBackBtnPanel, BoxLayout.X_AXIS));
 		backToEmpPage1 b1 = new backToEmpPage1();
@@ -927,109 +977,77 @@ public class final_pos extends JFrame{
 		
 		/*--------------------------------------------------------------------------*/		
 		//Cart Page
-		cartPage = new JPanel();
-		cartPage.setLayout(new BorderLayout());
-
-		cartTitleLabel = new JLabel("Shopping Cart", SwingConstants.CENTER);
-		cartTitleLabel.setFont(new Font("Serif", Font.BOLD, 30));
-		cartPage.add(cartTitleLabel, BorderLayout.NORTH);
-
-		// panel to display items
-		cartCenterPanel = new JPanel();
-		cartCenterPanel.setLayout(new BoxLayout(cartCenterPanel, BoxLayout.Y_AXIS));
-		updateCartDisplay(); // custom method below
-		cartPage.add(cartCenterPanel, BorderLayout.CENTER);
-
-		// Bottom panel with back & submit buttons 
-		cartBackBtn = new JButton("Back");
-		cartBackBtn.setFont(new Font("Serif", Font.BOLD, 20));
-
-		cartSubmitBtn = new JButton("Submit");
-		cartSubmitBtn.setFont(new Font("Serif", Font.BOLD, 20));
-
-		cartBtmPanel = new JPanel();
-		cartBtmPanel.setLayout(new BoxLayout(cartBtmPanel, BoxLayout.X_AXIS));
-		cartBtmPanel.add(cartBackBtn);
-		cartBtmPanel.add(Box.createHorizontalGlue());
-		cartBtmPanel.add(cartSubmitBtn);
-
-		cartPage.add(cartBtmPanel, BorderLayout.SOUTH);
-
-		// Action listeners for Cart page
-		cartBackBtn.addActionListener(e -> {
-		    setContentPane(shopPage); // or wherever you want to go back
-		    revalidate();
-		    repaint();
-		});
-
-		cartSubmitBtn.addActionListener(e -> {
-		    //JOptionPane.showMessageDialog(this, "Cart submitted successfully");
-		});
+ 		cartPage = new JPanel();
+ 		cartPage.setLayout(new BorderLayout());
+ 
+ 		cartTitleLabel = new JLabel("Shopping Cart", SwingConstants.CENTER);
+ 		cartTitleLabel.setFont(new Font("Serif", Font.BOLD, 30));
+ 		cartPage.add(cartTitleLabel, BorderLayout.NORTH);
+ 
+ 		// panel to display items
+ 		cartCenterPanel = new JPanel();
+ 		cartCenterPanel.setLayout(new BoxLayout(cartCenterPanel, BoxLayout.Y_AXIS));
+ 		updateCartDisplay(); // custom method below
+ 		cartPage.add(cartCenterPanel, BorderLayout.CENTER);
+ 
+ 		// Bottom panel with back & submit buttons 
+ 		cartBackBtn = new JButton("Back");
+ 		cartBackBtn.setFont(new Font("Serif", Font.BOLD, 20));
+ 
+ 		/*cartSubmitBtn = new JButton("Submit");
+ 		cartSubmitBtn.setFont(new Font("Serif", Font.BOLD, 20));
+		cartBtmPanel.add(cartSubmitBtn);*/
 		
-		ActionListener goToCartPage = new ActionListener() {
-		    public void actionPerformed(ActionEvent evt) {
-		        updateCartDisplay();  // Makes sure cart is up to date
-		        setContentPane(cartPage); // Show cart page
-		        revalidate();
-		        repaint();
-		    }
-		};
+ 		cartBtmPanel = new JPanel();
+ 		cartBtmPanel.setLayout(new BoxLayout(cartBtmPanel, BoxLayout.X_AXIS));
+ 		cartBtmPanel.add(cartBackBtn);
+ 		cartBtmPanel.add(Box.createHorizontalGlue());
 
-		// applies listener to all cart buttons
-		shopCartBtn.addActionListener(goToCartPage);
-		appCartBtn.addActionListener(goToCartPage);
-		elecCartBtn.addActionListener(goToCartPage);
-		furnCartBtn.addActionListener(goToCartPage);
+ 
+ 		cartPage.add(cartBtmPanel, BorderLayout.SOUTH);
+ 
+ 		// Action listeners for Cart page
+ 		cartBackBtn.addActionListener(e -> {
+ 		    setContentPane(shopPage); // or wherever you want to go back
+ 		    revalidate();
+ 		    repaint();
+ 		});
+ 
+ 		/*cartSubmitBtn.addActionListener(e -> {
+ 		    //JOptionPane.showMessageDialog(this, "Cart submitted successfully");
+ 		});*/
+ 		
+ 		ActionListener goToCartPage = new ActionListener() {
+ 		    public void actionPerformed(ActionEvent evt) {
+ 		        updateCartDisplay();  // Makes sure cart is up to date
+ 		        setContentPane(cartPage); // Show cart page
+ 		        revalidate();
+ 		        repaint();
+ 		    }
+ 		};
+ 
+ 		// applies listener to all cart buttons
+ 		shopCartBtn.addActionListener(goToCartPage);
+ 		appCartBtn.addActionListener(goToCartPage);
+ 		elecCartBtn.addActionListener(goToCartPage);
+ 		furnCartBtn.addActionListener(goToCartPage);
+		
 		setVisible(true);//makes sure everything done previously is seen
 	}
 
 
-	private void updateCartDisplay() {
-		cartCenterPanel.removeAll();
-
-		boolean hasItems = false;
-
-	    for (Map.Entry<String, JTextField> entry : quantityFields.entrySet()) {
-	        String item = entry.getKey();
-	        int qty = parseQty(entry.getValue());
-
-	        if (qty > 0) {
-	            hasItems = true;
-
-	            // Create a display line for the item
-	            JPanel itemRow = new JPanel();
-	            itemRow.setLayout(new BoxLayout(itemRow, BoxLayout.X_AXIS));
-	            itemRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-	            JLabel itemLabel = new JLabel(item + " (x" + qty + ")");
-	            itemLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
-	            itemRow.add(itemLabel);
-
-	            cartCenterPanel.add(itemRow);
-	            cartCenterPanel.add(Box.createVerticalStrut(10)); // spacing
-	        }
-	    }
-
-	    if (!hasItems) {
-	        JLabel emptyLabel = new JLabel("Your cart is empty.");
-	        emptyLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
-	        emptyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-	        cartCenterPanel.add(emptyLabel);
-	    }
-
-	    cartCenterPanel.revalidate();
-	    cartCenterPanel.repaint();
-	}
 	public static void main(String[] args) {
-	    try {
-	        final_pos connect1 = new final_pos(); // now this is inside try
-	        connect1.getConnection();
-	        System.out.println("Connection to SQLite has been established.");
-	    } catch (SQLException e) {
-	        System.out.println("SQL Error: " + e.getMessage());
-	    } catch (Exception e) {
-	        System.out.println("Other Error: " + e.getMessage());
-	    }
+		// TODO Auto-generated method stub
+		final_pos connect1 = new final_pos();
+		try {
+			connect1.getConnection();//should be defined in the JAR file
+			System.out.println("Connection to SQLite has been established.");
+			connect1.getConnection2();//should be defined in the JAR file
+			System.out.println("Connection to SQLite has been established2.");
+		}catch(SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		
 	}
 
 	class IntroToPage implements ActionListener{
@@ -1235,38 +1253,37 @@ public class final_pos extends JFrame{
 			System.out.println(e.getMessage());
 		}
 	}
-	//Employee Login
+	//Employee Login after pressing log in
 	class empLogIn implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
-		    String username = userInput.getText().trim();
-		    String password = passInput.getText().trim();
-
-		    try (Connection conn = getConnection()) {
-		        String query = "SELECT * FROM Employees WHERE Username = ? AND Password = ?";
-		        PreparedStatement stmt = conn.prepareStatement(query);
-		        stmt.setString(1, username);
-		        stmt.setString(2, password);
-
-		        ResultSet rs = stmt.executeQuery();
-
-		        if (rs.next()) {
-		            // login successful
-		            setContentPane(empPage);
-		            revalidate();
-		            repaint();
-		        } else {
-		            // login failed
-		            JOptionPane.showMessageDialog(null, "Username or Password is incorrect. Please try again.");
-		            userInput.setText("");
-		            passInput.setText("");
-		        }
-
-		        rs.close();
-		        stmt.close();
-		    } catch (SQLException e) {
-		        e.printStackTrace();
-		        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage());
-		    }
+            String username = userInput.getText().trim();
+            String password = passInput.getText().trim();
+            try(Connection connection2 = getConnection2(); ) {
+ 		        String query = "SELECT * FROM EmployeeLogIn WHERE Username = ? AND Password = ?";
+ 		        PreparedStatement stmt = connection2.prepareStatement(query);
+ 		        stmt.setString(1, username);
+ 		        stmt.setString(2, password);
+ 
+ 		        ResultSet rs = stmt.executeQuery();
+ 
+ 		        if (rs.next()) {
+ 		            // login successful
+ 		            setContentPane(empPage);
+ 		            revalidate();
+ 		            repaint();
+ 		        } else {
+ 		            // login failed
+ 		            JOptionPane.showMessageDialog(null, "Username or Password is incorrect. Please try again.");
+ 		            userInput.setText("");
+ 		            passInput.setText("");
+ 		        }
+ 
+ 		        rs.close();
+ 		        stmt.close();
+ 		    } catch (SQLException e) {
+ 		        e.printStackTrace();
+ 		        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage());
+ 		    }
 		}
 
 			}
@@ -1351,12 +1368,11 @@ public class final_pos extends JFrame{
 			public void actionPerformed(ActionEvent evt) {
 				if(evt.getSource() == appSubmitBtn||evt.getSource() == elecSubmitBtn||evt.getSource() == furnSubmitBtn) {
 		            //check stock availability for each item before updating the cart
-		            for (Map.Entry<String, JTextField> e : quantityFields.entrySet()) {
-		                String item    = e.getKey();                  // the product name
+		            for (Map.Entry<String, JTextField> e : quantityFields.entrySet()) {  //goes thru each quantity field
+		                String item    = e.getKey();                  // gets the product name
 		                int desired    = parseQty(e.getValue());      // how many the user entered
 		                String table   = itemTableMap.get(item);      // which DB table it belongs to
-		                String sql     = "SELECT Quantity FROM " 
-		                                 + table + " WHERE Name = ?";
+		                String sql     = "SELECT Quantity FROM " + table + " WHERE Name = ?";
 		                try (PreparedStatement ps = connection.prepareStatement(sql)) {
 		                    ps.setString(1, item);                   // bind the product name
 		                    try (ResultSet rs = ps.executeQuery()) {
