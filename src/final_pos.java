@@ -15,7 +15,7 @@ public class final_pos extends JFrame{
 	
 
 	private Connection connection;
-	private String dbUrl="jdbc:sqlite:C:/Users/Leonard/Documents/IDS401FinalPos/Inventory.db";
+	private String dbUrl = "jdbc:sqlite:Inventory.db";
 	public Connection getConnection() throws SQLException{
 		connection=DriverManager.getConnection(dbUrl);
 		return connection;
@@ -1136,23 +1136,38 @@ public class final_pos extends JFrame{
 			System.out.println(e.getMessage());
 		}
 	}
-	//Employee Login after pressing log in
+	//Employee Login
 	class empLogIn implements ActionListener{
 		public void actionPerformed(ActionEvent evt) {
-            String username = userInput.getText();
-            String password = passInput.getText();
-			if (evt.getSource()==logBtn){
-				if (username.equals("employee32") && password.equals("Passw0rd1")) {
-					setContentPane(empPage);
-					revalidate();
-					repaint();
-				}
-				else if (!username.equals("employee32") || !password.equals("Passw0rd1")) {
-	               passInput.setText("");
-	               userInput.setText("");
-	                JOptionPane.showMessageDialog(null, "Username or Password is incorrect. Please try again.");
-				}
-		}
+		    String username = userInput.getText().trim();
+		    String password = passInput.getText().trim();
+
+		    try (Connection conn = getConnection()) {
+		        String query = "SELECT * FROM Employees WHERE Username = ? AND Password = ?";
+		        PreparedStatement stmt = conn.prepareStatement(query);
+		        stmt.setString(1, username);
+		        stmt.setString(2, password);
+
+		        ResultSet rs = stmt.executeQuery();
+
+		        if (rs.next()) {
+		            // login successful
+		            setContentPane(empPage);
+		            revalidate();
+		            repaint();
+		        } else {
+		            // login failed
+		            JOptionPane.showMessageDialog(null, "Username or Password is incorrect. Please try again.");
+		            userInput.setText("");
+		            passInput.setText("");
+		        }
+
+		        rs.close();
+		        stmt.close();
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage());
+		    }
 		}
 
 			}
