@@ -54,6 +54,8 @@ public class final_pos extends JFrame{
 	private JButton empChangeInvPrice;
 	private JButton empChangePriceSubmitBtn;
 	private JButton empChangeQuantitySubmitLabel;
+	private JButton cartBackBtn;
+	private JButton cartSubmitBtn;
 	
 	private JPanel centerPanel;
 	private JPanel shopPage;//all new JPanels needs to be defined as a variable bc the shop page is built inside the constructor where it cant be accessed by the action listener
@@ -102,7 +104,9 @@ public class final_pos extends JFrame{
 	private JPanel empChangeQuantityNamePanel;
 	private JPanel empChangeQuantitySubmitPanel;
 	private JPanel empChangeQuantityResultsPanel;
-
+	private JPanel cartPage;
+	private JPanel cartBtmPanel;
+	private JPanel cartCenterPanel;
 	
 	private JTextField userInput;
 	private JTextField passInput;
@@ -129,6 +133,13 @@ public class final_pos extends JFrame{
 	private JLabel empSelectPriceQuantity;
 	private JLabel empChangePriceSubmitResponse;
 	private JLabel empChangeQuantityResultsLabel;
+	private JLabel cartTitleLabel;
+	private JLabel cartCountLabel;
+	
+	private int cartNum = 0;
+	private int appItems = 0;
+	private int elecItems = 0;
+	private int furnItems = 0;
 	
 	Font font2 = new Font("Seriff", Font.BOLD, 30);
 	
@@ -915,22 +926,110 @@ public class final_pos extends JFrame{
 		furnSubmitBtn.addActionListener(cartUpdate);
 		
 		/*--------------------------------------------------------------------------*/		
+		//Cart Page
+		cartPage = new JPanel();
+		cartPage.setLayout(new BorderLayout());
+
+		cartTitleLabel = new JLabel("Shopping Cart", SwingConstants.CENTER);
+		cartTitleLabel.setFont(new Font("Serif", Font.BOLD, 30));
+		cartPage.add(cartTitleLabel, BorderLayout.NORTH);
+
+		// panel to display items
+		cartCenterPanel = new JPanel();
+		cartCenterPanel.setLayout(new BoxLayout(cartCenterPanel, BoxLayout.Y_AXIS));
+		updateCartDisplay(); // custom method below
+		cartPage.add(cartCenterPanel, BorderLayout.CENTER);
+
+		// Bottom panel with back & submit buttons 
+		cartBackBtn = new JButton("Back");
+		cartBackBtn.setFont(new Font("Serif", Font.BOLD, 20));
+
+		cartSubmitBtn = new JButton("Submit");
+		cartSubmitBtn.setFont(new Font("Serif", Font.BOLD, 20));
+
+		cartBtmPanel = new JPanel();
+		cartBtmPanel.setLayout(new BoxLayout(cartBtmPanel, BoxLayout.X_AXIS));
+		cartBtmPanel.add(cartBackBtn);
+		cartBtmPanel.add(Box.createHorizontalGlue());
+		cartBtmPanel.add(cartSubmitBtn);
+
+		cartPage.add(cartBtmPanel, BorderLayout.SOUTH);
+
+		// Action listeners for Cart page
+		cartBackBtn.addActionListener(e -> {
+		    setContentPane(shopPage); // or wherever you want to go back
+		    revalidate();
+		    repaint();
+		});
+
+		cartSubmitBtn.addActionListener(e -> {
+		    //JOptionPane.showMessageDialog(this, "Cart submitted successfully");
+		});
 		
-		
+		ActionListener goToCartPage = new ActionListener() {
+		    public void actionPerformed(ActionEvent evt) {
+		        updateCartDisplay();  // Makes sure cart is up to date
+		        setContentPane(cartPage); // Show cart page
+		        revalidate();
+		        repaint();
+		    }
+		};
+
+		// applies listener to all cart buttons
+		shopCartBtn.addActionListener(goToCartPage);
+		appCartBtn.addActionListener(goToCartPage);
+		elecCartBtn.addActionListener(goToCartPage);
+		furnCartBtn.addActionListener(goToCartPage);
 		setVisible(true);//makes sure everything done previously is seen
 	}
 
 
+	private void updateCartDisplay() {
+		cartCenterPanel.removeAll();
+
+		boolean hasItems = false;
+
+	    for (Map.Entry<String, JTextField> entry : quantityFields.entrySet()) {
+	        String item = entry.getKey();
+	        int qty = parseQty(entry.getValue());
+
+	        if (qty > 0) {
+	            hasItems = true;
+
+	            // Create a display line for the item
+	            JPanel itemRow = new JPanel();
+	            itemRow.setLayout(new BoxLayout(itemRow, BoxLayout.X_AXIS));
+	            itemRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+	            JLabel itemLabel = new JLabel(item + " (x" + qty + ")");
+	            itemLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
+	            itemRow.add(itemLabel);
+
+	            cartCenterPanel.add(itemRow);
+	            cartCenterPanel.add(Box.createVerticalStrut(10)); // spacing
+	        }
+	    }
+
+	    if (!hasItems) {
+	        JLabel emptyLabel = new JLabel("Your cart is empty.");
+	        emptyLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
+	        emptyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+	        cartCenterPanel.add(emptyLabel);
+	    }
+
+	    cartCenterPanel.revalidate();
+	    cartCenterPanel.repaint();
+	}
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		final_pos connect1 = new final_pos();
-		try {
-			connect1.getConnection();//should be defined in the JAR file
-			System.out.println("Connection to SQLite has been established.");
-		}catch(SQLException e) {
-			System.out.println(e.getMessage());
-		}
-		
+	    try {
+	        final_pos connect1 = new final_pos(); // now this is inside try
+	        connect1.getConnection();
+	        System.out.println("Connection to SQLite has been established.");
+	    } catch (SQLException e) {
+	        System.out.println("SQL Error: " + e.getMessage());
+	    } catch (Exception e) {
+	        System.out.println("Other Error: " + e.getMessage());
+	    }
 	}
 
 	class IntroToPage implements ActionListener{
