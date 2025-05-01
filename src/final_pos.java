@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class final_pos extends JFrame{
+public class final_pos2 extends JFrame{
 	
 
 	private Connection connection;
@@ -197,7 +197,7 @@ public class final_pos extends JFrame{
 	        }
 	    }
 
-	    // 3) create the JTable and wrap it
+	    // create the JTable and wrap it
 	    JTable table = new JTable(model);	//creates proper table with model
 	    table.setFillsViewportHeight(true);		//full table is always shown
 	    JScrollPane scrollPane = new JScrollPane(table);
@@ -353,7 +353,7 @@ public class final_pos extends JFrame{
 		        shopCartBtn.setText("Cart: " + cartNum);
 	}
 	
-	public final_pos() {//constructor
+	public final_pos2() {//constructor
 		setPreferredSize(new Dimension(750,750));;//set size to 800x800
 		setMaximumSize(new Dimension(750,750));
 		setMinimumSize(new Dimension(750,750));
@@ -996,13 +996,12 @@ public class final_pos extends JFrame{
  
  		/*cartSubmitBtn = new JButton("Submit");
  		cartSubmitBtn.setFont(new Font("Serif", Font.BOLD, 20));
-		cartBtmPanel.add(cartSubmitBtn);*/
-		
+ 		cartBtmPanel.add(cartSubmitBtn);*/
+ 		
  		cartBtmPanel = new JPanel();
  		cartBtmPanel.setLayout(new BoxLayout(cartBtmPanel, BoxLayout.X_AXIS));
  		cartBtmPanel.add(cartBackBtn);
- 		cartBtmPanel.add(Box.createHorizontalGlue());
-
+ 
  
  		cartPage.add(cartBtmPanel, BorderLayout.SOUTH);
  
@@ -1038,7 +1037,7 @@ public class final_pos extends JFrame{
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		final_pos connect1 = new final_pos();
+		final_pos2 connect1 = new final_pos2();
 		try {
 			connect1.getConnection();//should be defined in the JAR file
 			System.out.println("Connection to SQLite has been established.");
@@ -1227,6 +1226,7 @@ public class final_pos extends JFrame{
 		int addQuantity1;
 		double addPrice1;
 		String Query = "";
+		String checkName = "";
 		try {
 			Connection connection = DriverManager.getConnection(dbUrl);
 			addCategory = (String) empEditInvBox1.getSelectedItem();
@@ -1237,6 +1237,18 @@ public class final_pos extends JFrame{
 			addQuantity1 = Integer.parseInt(addQuantity);
 			
 			Query = "INSERT INTO " + addCategory + "(Name, Price, Quantity) VALUES (?, ?, ?)";	
+			checkName = "SELECT COUNT(*) FROM " + addCategory + " WHERE Name = ?";
+ 			
+ 			//checks if an item of the same name exists already
+ 			PreparedStatement check = connection.prepareStatement(checkName);
+ 			check.setString(1, addName);
+ 			ResultSet rs = check.executeQuery();
+ 	        if (rs.next() && rs.getInt(1) > 0) {
+ 	            empEditInvResult.setText("Item already exists");
+ 	            return; //exit current method if item already exists
+ 	        }
+ 	        rs.close();
+ 	        check.close();
 			//adds new item based of user answers
 			PreparedStatement stmt = connection.prepareStatement(Query);
 			stmt.setString(1, addName);
@@ -1381,7 +1393,7 @@ public class final_pos extends JFrame{
 		                            : 0;                            // get stock or 0 if no row
 		                        if (desired > available) {           // if user wants more than stock
 		                            JOptionPane.showMessageDialog(
-		                                final_pos.this,
+		                                final_pos2.this,
 		                                "Sorry, only " + available 
 		                                + " of \"" + item + "\" available.",
 		                                "Out of Stock",
@@ -1395,7 +1407,7 @@ public class final_pos extends JFrame{
 		                } catch (SQLException ex) {
 		                    ex.printStackTrace();
 		                    JOptionPane.showMessageDialog(
-		                        final_pos.this,
+		                        final_pos2.this,
 		                        "DB error checking stock for " + item 
 		                        + ": " + ex.getMessage(),
 		                        "DB Error",
